@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Dashboard IOTVZLA - Cliente</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0077cc"/>
+
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#00bcd4;
+      --text:#e6eef6;
+      --ok:#00c853;
+      --alert:#ff1744;
+      --muted:#9fb3c8;
+    }
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#071427 0%, #071827 100%);color:var(--text);-webkit-font-smoothing:antialiased;}
+    header{padding:18px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);}
+    h1{margin:0;font-size:20px}
+    .container{padding:16px;max-width:920px;margin:18px auto;}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:14px;}
+    @media(max-width:760px){.grid{grid-template-columns:1fr;}}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.02);}
+    .gauge{height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column}
+    .temp-value{font-size:56px;font-weight:700;margin-top:12px;}
+    .meta{font-size:13px;color:var(--muted);margin-top:6px;}
+    .leds{display:flex;flex-direction:column;gap:12px;}
+    .led-row{display:flex;align-items:center;gap:12px;}
+    .led-circle{width:56px;height:56px;border-radius:999px;background:#223344;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:inset 0 -6px 12px rgba(0,0,0,0.4);}
+    .led-label{font-size:14px;color:var(--muted)}
+    .status-time{font-size:13px;color:var(--muted);margin-top:6px;}
+    footer{padding:10px;text-align:center;color:var(--muted);font-size:12px}
+    .small{font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Panel cliente — IOTVZLA</h1>
+    <div class="small">Temperatura • Alarma • Reset — Mostrar como app (PWA)</div>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <div class="card">
+        <div class="gauge">
+          <div id="gauge" class="temp-value">--.- °C</div>
+          <div id="gauge-sub" class="meta">Última actualización: --:--:--</div>
+        </div>
+        <div style="margin-top:12px" class="small">Nota: toque actualizar si lo desea (la página actualiza sola cada 30s).</div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="font-weight:700;margin-bottom:10px">Estado de Alarma</div>
+          <div class="leds" style="width:100%">
+            <div class="led-row">
+              <div id="led-alarma" class="led-circle" style="background:#223344">—</div>
+              <div style="flex:1">
+                <div class="led-label">ALERTA</div>
+                <div id="alarma-text" class="meta">No hay alarma</div>
+              </div>
+            </div>
+            <div class="led-row">
+              <div id="led-reset" class="led-circle" style="background:#223344">—</div>
+              <div style="flex:1">
+                <div class="led-label">RESET</div>
+                <div id="reset-text" class="meta">No activo</div>
+              </div>
+            </div>
+          </div>
+          <div id="last-up" class="status-time" style="margin-top:14px">Último ping: --</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px" class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="small">Canal ThingSpeak: <span id="canal-id">--</span></div>
+        <div class="small">Actualización automática cada <b id="refresh-sec">30</b>s</div>
+      </div>
+      <div style="margin-top:8px" class="small">Instrucciones: Para añadir en la pantalla principal del móvil: Menú → "Agregar a pantalla principal".</div>
+    </div>
+  </div>
+
+  <footer>Desarrollado para IOTVZLA — Panel PWA</footer>
+
+<script>
+/* ======= CONFIG: Pegue su CHANNEL ID y READ API KEY AQUI (en tu PC, NO compartir) ======= */
+const THINGSPEAK_CHANNEL_ID = "3194050";
+const THINGSPEAK_READ_API_KEY = "4L6L63LNFO0YG4BB";
+/* ===================================================================================== */
+
+/* Ajustes */
+let refreshSeconds = 30; // cada cuantos segundos actualiza la página (30 recomendado)
+document.getElementById('refresh-sec').innerText = refreshSeconds;
+
+/* Función para obtener la última lectura */
+async function fetchLatest() {
+  if (!THINGSPEAK_CHANNEL_ID || !THINGSPEAK_READ_API_KEY || THINGSPEAK_CHANNEL_ID.includes("TU_")) {
+    document.getElementById('gauge').innerText = "--.- °C";
+    document.getElementById('gauge-sub').innerText = "Configura CHANNEL ID y READ API KEY en el archivo.";
+    return;
+  }
+  try {
+    const url = `https://api.thingspeak.com/channels/${THINGSPEAK_CHANNEL_ID}/feeds.json?results=1&api_key=${THINGSPEAK_READ_API_KEY}`;
+    const res = await fetch(url, {cache: "no-cache"});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!data || !data.feeds || data.feeds.length === 0) {
+      throw new Error('No data');
+    }
+    const feed = data.feeds[0];
+    const temp = feed.field1 ? parseFloat(feed.field1) : null;
+    const alarma = feed.field2 ? (parseInt(feed.field2)===1) : false;
+    const reset = feed.field3 ? (parseInt(feed.field3)===1) : false;
+    const created_at = feed.created_at ? new Date(feed.created_at) : new Date();
+
+    // update UI
+    document.getElementById('gauge').innerText = (temp!==null? temp.toFixed(2): '--.-') + ' °C';
+    document.getElementById('gauge-sub').innerText = 'Última actualización: ' + created_at.toLocaleString();
+    document.getElementById('canal-id').innerText = THINGSPEAK_CHANNEL_ID;
+    document.getElementById('last-up').innerText = 'Último ping: ' + created_at.toLocaleString();
+
+    // alarma LED
+    const ledAl = document.getElementById('led-alarma');
+    const alarmaText = document.getElementById('alarma-text');
+    if (alarma) {
+      ledAl.style.background = '#ff1744';
+      ledAl.innerText = '!';
+      alarmaText.innerText = '¡ALARMA ACTIVADA!';
+    } else {
+      ledAl.style.background = '#00c853';
+      ledAl.innerText = '✓';
+      alarmaText.innerText = 'Sin alarma';
+    }
+
+    // reset LED
+    const ledRe = document.getElementById('led-reset');
+    const resetText = document.getElementById('reset-text');
+    if (reset) {
+      ledRe.style.background = '#ff9800';
+      ledRe.innerText = 'R';
+      resetText.innerText = 'Reset reciente';
+    } else {
+      ledRe.style.background = '#223344';
+      ledRe.innerText = '-';
+      resetText.innerText = 'No activo';
+    }
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('gauge-sub').innerText = 'Error al leer ThingSpeak';
+  }
+}
+
+/* Auto actualización */
+fetchLatest();
+setInterval(fetchLatest, refreshSeconds * 1000);
+
+/* PWA: aviso si es posible instalar */
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('beforeinstallprompt fired');
+  // puedes mostrar un botón personalizado si quieres
+});
+
+</script>
+</body>
+</html>
