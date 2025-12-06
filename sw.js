@@ -9,4 +9,5 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   // Por ahora no hacemos caché; solo dejamos pasar las peticiones.
+
 });
