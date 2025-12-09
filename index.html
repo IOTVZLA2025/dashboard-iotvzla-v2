@@ -4,11 +4,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>MONITOREO VARIABLES MILLARES</title>
+<meta name="description" content="Sistema de monitoreo IoT Millares BAGB SPA">
 <link rel="icon" href="logo-millares.png" type="image/png">
 <link rel="apple-touch-icon" href="logo-millares.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0b1622" />
+<meta name="theme-color" content="#0b1622">
+<title>MONITOREO VARIABLES MILLARES</title>
 
 <style>
   :root{
@@ -114,7 +115,7 @@
     }
   }
 
-  /* Gauge area - CORREGIDO */
+  /* GAUGE - CORREGIDO CON NÚMEROS SOBRE EL DIAL */
   .gauge-wrapper{
     display:flex;
     flex-direction:column;
@@ -122,14 +123,15 @@
     justify-content:center;
     padding:8px;
   }
+  
   .gauge-container {
     position:relative;
     width:300px;
     height:160px;
-    margin:0 auto 15px auto;
+    margin:0 auto 20px auto;
   }
   
-  /* Fondo del gauge - semicírculo HACIA ARRIBA */
+  /* Fondo del gauge */
   .gauge-background {
     position:absolute;
     width:300px;
@@ -144,25 +146,25 @@
     top:10px;
   }
   
-  /* Arco de colores CORREGIDO */
+  /* Arco de colores */
   .gauge-arc {
     position:absolute;
     width:300px;
     height:150px;
     background:conic-gradient(
-      from 0deg at 50% 0%,
-      #00c853 0deg,      /* Verde en -15°C (izquierda) */
-      #ffca28 90deg,     /* Amarillo a 30°C */
-      #ff9800 135deg,    /* Naranja a 60°C */
-      #ff1744 180deg     /* Rojo en 100°C (derecha) */
+      from 180deg,
+      #00c853 0deg,      /* Verde en -15°C */
+      #ffca28 90deg,     /* Amarillo */
+      #ff9800 135deg,    /* Naranja */
+      #ff1744 180deg     /* Rojo en 100°C */
     );
     border-radius:0 0 150px 150px;
     clip-path:polygon(0% 70%, 100% 70%, 100% 100%, 0% 100%);
-    opacity:0.4;
+    opacity:0.3;
     top:10px;
   }
   
-  /* Líneas de marcación CORREGIDAS */
+  /* Marcaciones - CORREGIDAS */
   .gauge-ticks {
     position:absolute;
     width:100%;
@@ -188,7 +190,7 @@
     box-shadow:0 0 4px rgba(255,255,255,0.5);
   }
   
-  /* Números del gauge - CORREGIDA POSICIÓN */
+  /* NÚMEROS SOBRE EL DIAL - CORREGIDOS */
   .gauge-numbers {
     position:absolute;
     width:100%;
@@ -199,8 +201,13 @@
     text-shadow:0 1px 3px rgba(0,0,0,0.8);
     top:10px;
   }
+  .number {
+    position:absolute;
+    text-align:center;
+    transform-origin:50% 150px;
+  }
   
-  /* Aguja amarilla CORREGIDA */
+  /* Aguja */
   .gauge-needle {
     --rot:0deg;
     position:absolute;
@@ -216,7 +223,7 @@
     box-shadow:0 0 8px rgba(255,202,40,0.6);
   }
   
-  /* Centro de la aguja CORREGIDO */
+  /* Centro */
   .needle-center {
     position:absolute;
     width:14px;
@@ -230,47 +237,29 @@
     box-shadow:0 0 8px rgba(255,202,40,0.4);
   }
   
-  /* Display de temperatura CORREGIDO */
+  /* Display de temperatura */
   .temp-display {
     position:absolute;
-    top:165px;
+    top:170px;
     left:50%;
     transform:translateX(-50%);
     text-align:center;
     width:100%;
   }
   .temp-value {
-    font-size:38px;
+    font-size:42px;
     font-weight:800;
     color:#ffca28;
     text-shadow:0 3px 10px rgba(255,202,40,0.3);
     line-height:1;
-    margin-bottom:5px;
   }
   .temp-unit {
-    font-size:20px;
+    font-size:22px;
     color:rgba(255,255,255,0.7);
     margin-left:2px;
   }
   
-  /* Información del gauge */
-  .gauge-info {
-    text-align:center;
-    margin-top:10px;
-    width:100%;
-  }
-  .range-info {
-    font-size:13px;
-    color:var(--muted);
-    margin:8px 0;
-    padding:5px 10px;
-    background:rgba(255,255,255,0.02);
-    border-radius:6px;
-  }
-  .update-info {
-    font-size:12px;
-    color:var(--muted);
-  }
+  /* Labels fijos -15 y 100 */
   .range-labels {
     display:flex;
     justify-content:space-between;
@@ -280,8 +269,27 @@
     font-weight:600;
     color:#fff;
   }
+  
+  /* Información */
+  .gauge-info {
+    text-align:center;
+    margin-top:15px;
+    width:100%;
+  }
+  .range-info {
+    font-size:13px;
+    color:var(--muted);
+    margin:10px 0;
+    padding:6px 12px;
+    background:rgba(255,255,255,0.02);
+    border-radius:6px;
+  }
+  .update-info {
+    font-size:12px;
+    color:var(--muted);
+  }
 
-  /* Panel derecho - CORREGIDO */
+  /* Panel derecho */
   .right-col{
     display:flex;
     flex-direction:column;
@@ -383,7 +391,7 @@
 
 <div class="container">
   <div class="main-grid">
-    <!-- GAUGE CORREGIDO -->
+    <!-- GAUGE CON NÚMEROS CORRECTOS -->
     <div class="card">
       <div class="gauge-wrapper">
         <div class="range-labels">
@@ -396,16 +404,16 @@
           <div class="gauge-arc"></div>
           <div class="gauge-ticks" id="gauge-ticks"></div>
           <div class="gauge-numbers" id="gauge-numbers"></div>
-          <div class="gauge-needle" id="needle" style="--rot:-90deg"></div>
+          <div class="gauge-needle" id="needle" style="--rot:0deg"></div>
           <div class="needle-center"></div>
         </div>
         
         <div class="temp-display">
-          <div class="temp-value" id="temp-digital">--.-<span class="temp-unit">°C</span></div>
+          <div class="temp-value" id="temp-digital">25.3<span class="temp-unit">°C</span></div>
         </div>
         
         <div class="gauge-info">
-          <div id="gauge-sub" class="range-info">Última actualización: --</div>
+          <div id="gauge-sub" class="range-info">Última actualización: 09-12-2025 02:55:08 a. m.</div>
           <div class="update-info">Actualización automática cada 30 segundos</div>
         </div>
       </div>
@@ -433,8 +441,8 @@
       <div id="reset-banner" class="banner reset" style="display:none">RESET RECOMENDADO</div>
 
       <div class="connection-info">
-        <div id="last-up">Último ping: --</div>
-        <div id="status-http">Conexión: --</div>
+        <div id="last-up">Último ping: 02:55:08 a. m.</div>
+        <div id="status-http">Conexión: OK</div>
       </div>
     </div>
   </div>
@@ -446,14 +454,14 @@
 
 <script>
   // =============================================
-  // 🔧 CONFIGURACIÓN - ¡REEMPLAZA TUS CREDENCIALES!
+  // CONFIGURACIÓN THINGSPEAK
   // =============================================
   const CONFIG = {
     thingspeak: {
-      // ⚠️ REEMPLAZA ESTOS VALORES ⚠️
-      channelId: '3194050',                      // TU CHANNEL ID
-      readApiKey: '4L6L63LNFO0YG4BB',     // TU READ API KEY
-      field: 1,                                  // Campo temperatura
+      // ⚠️ REEMPLAZA CON TUS CREDENCIALES ⚠️
+      channelId: '3194050',          // Ej: '2525252'
+      readApiKey: '4L6L63LNFO0YG4BB',       // Ej: 'XK9L7P2Q4R6T8V1W3Y5Z7A'
+      field: 1,                            // Campo de temperatura
       url: 'https://api.thingspeak.com/channels/'
     },
     updateInterval: 30000,
@@ -462,60 +470,70 @@
   };
 
   // =============================================
-  // INICIALIZACIÓN DEL GAUGE CORREGIDO
+  // INICIALIZAR NÚMEROS SOBRE EL DIAL
   // =============================================
   function initGauge() {
     const ticksContainer = document.getElementById('gauge-ticks');
     const numbersContainer = document.getElementById('gauge-numbers');
     
-    // Rango: -15°C (izquierda) a 100°C (derecha)
     const minTemp = -15;
     const maxTemp = 100;
     const range = maxTemp - minTemp;
     
-    // Ángulo CORREGIDO: -90° (izquierda) a 90° (derecha)
-    const startAngle = -90;   // Izquierda (-15°C)
-    const endAngle = 90;      // Derecha (100°C)
-    const angleRange = endAngle - startAngle; // 180°
+    // Ángulo: -15°C = 180° (izquierda), 100°C = 0° (derecha)
+    const startAngle = 180;   // Izquierda
+    const endAngle = 0;       // Derecha
+    const angleRange = Math.abs(endAngle - startAngle);
     
-    // Crear marcas cada 5°C
+    // Crear marcas y números
     for (let temp = minTemp; temp <= maxTemp; temp += 5) {
       const percent = (temp - minTemp) / range;
-      const angle = startAngle + (percent * angleRange);
+      const angle = startAngle - (percent * angleRange);
       
-      // Marcas menores
-      const tick = document.createElement('div');
-      tick.className = 'tick minor';
-      tick.style.transform = `rotate(${angle}deg)`;
-      ticksContainer.appendChild(tick);
+      // Marcas menores cada 5°C
+      if (temp % 5 === 0) {
+        const tick = document.createElement('div');
+        tick.className = 'tick minor';
+        tick.style.transform = `rotate(${angle}deg)`;
+        ticksContainer.appendChild(tick);
+      }
       
-      // Números principales (cada 20°C)
-      if (temp % 20 === 0 || temp === minTemp || temp === maxTemp) {
-        const number = document.createElement('div');
-        number.className = 'number';
-        number.textContent = temp === -15 ? '-15' : temp;
-        
-        // Posicionar correctamente (U hacia arriba)
-        const rad = (angle + 90) * (Math.PI / 180); // Ajuste para U hacia arriba
-        const radius = 110;
-        const x = 150 + Math.cos(rad) * radius;
-        const y = 150 - Math.sin(rad) * radius; // Invertido para U hacia arriba
-        
-        number.style.left = `${x - 10}px`;
-        number.style.top = `${y - 10}px`;
-        numbersContainer.appendChild(number);
-        
+      // Números principales cada 25°C + extremos
+      if (temp % 25 === 0 || temp === minTemp || temp === maxTemp) {
         // Marca mayor
         const majorTick = document.createElement('div');
         majorTick.className = 'tick major';
         majorTick.style.transform = `rotate(${angle}deg)`;
         ticksContainer.appendChild(majorTick);
+        
+        // Número SOBRE el dial
+        const number = document.createElement('div');
+        number.className = 'number';
+        number.textContent = temp;
+        
+        // Posición CORRECTA sobre el dial (arco de 180°)
+        const rad = angle * (Math.PI / 180);
+        const radius = 120; // Radio del arco
+        
+        // Calcular posición X,Y sobre el semicírculo
+        const x = 150 + Math.cos(rad) * radius;
+        const y = 150 - Math.sin(rad) * radius; // Restar porque Y crece hacia abajo
+        
+        // Ajustar para que quede JUSTO sobre las marcas
+        number.style.left = `${x - 10}px`;  // Centrar número
+        number.style.top = `${y - 10}px`;
+        
+        // Rotar números para que sigan la curva
+        const textAngle = angle > 90 ? angle - 180 : angle;
+        number.style.transform = `rotate(${textAngle}deg)`;
+        
+        numbersContainer.appendChild(number);
       }
     }
   }
 
   // =============================================
-  // FUNCIONES PRINCIPALES CORREGIDAS
+  // FUNCIONES PRINCIPALES
   // =============================================
   async function fetchThingSpeakData() {
     const { channelId, readApiKey, field, url } = CONFIG.thingspeak;
@@ -527,9 +545,8 @@
       const data = await response.json();
       return parseFloat(data[`field${field}`]) || 0;
     } catch (error) {
-      console.error('Error conectando a ThingSpeak:', error);
-      // Datos de prueba (simula 25.3°C)
-      return 25.3;
+      console.error('Error:', error);
+      return 25.3; // Valor de prueba
     }
   }
 
@@ -537,20 +554,18 @@
     const needle = document.getElementById('needle');
     const tempDigital = document.getElementById('temp-digital');
     
-    // Actualizar valor digital
     tempDigital.textContent = temp.toFixed(1);
     
-    // Calcular ángulo CORREGIDO: -15°C = -90°, 100°C = 90°
+    // Calcular ángulo: -15°C = 180°, 100°C = 0°
     const minTemp = -15;
     const maxTemp = 100;
     const clampedTemp = Math.max(minTemp, Math.min(maxTemp, temp));
     const percent = (clampedTemp - minTemp) / (maxTemp - minTemp);
-    const angle = -90 + (percent * 180); // De -90° a 90°
+    const angle = 180 - (percent * 180);
     
-    // Mover aguja
     needle.style.setProperty('--rot', `${angle}deg`);
     
-    // Color según temperatura
+    // Color del valor
     if (temp >= 20 && temp <= 30) {
       tempDigital.style.color = '#00c853';
     } else if (temp > 30 && temp <= 50) {
@@ -657,4 +672,3 @@
 </script>
 </body>
 </html>
-
