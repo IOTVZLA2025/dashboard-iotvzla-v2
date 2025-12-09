@@ -91,12 +91,8 @@
     .main-grid{
       grid-template-columns:1fr;
     }
-    .gauge{
-      width:280px !important;
-      height:280px !important;
-    }
-    .temp-value{
-      font-size:48px !important;
+    .gauge-container{
+      transform:scale(0.9);
     }
     header{
       padding:12px 14px;
@@ -112,110 +108,149 @@
     }
   }
   @media(max-width:480px){
-    .gauge{
-      width:240px !important;
-      height:240px !important;
-    }
-    .temp-value{
-      font-size:42px !important;
+    .gauge-container{
+      transform:scale(0.8);
+      margin:-10px 0;
     }
     .container{
       padding:8px;
     }
   }
 
-  /* Gauge area */
+  /* Gauge area - NUEVO DISEÑO */
   .gauge-wrap{
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    padding:18px
+    padding:10px;
   }
-  .gauge-card{
+  .gauge-container {
+    position:relative;
+    width:280px;
+    height:140px;
+    margin:0 auto;
+    overflow:hidden;
+  }
+  
+  /* Semicírculo del gauge */
+  .gauge-semicircle {
+    position:absolute;
+    width:280px;
+    height:280px;
+    border-radius:50%;
+    background:conic-gradient(
+      from 180deg,
+      transparent 0deg,
+      transparent 45deg,
+      rgba(0,188,212,0.1) 45deg,
+      rgba(0,188,212,0.3) 90deg,
+      rgba(0,188,212,0.5) 135deg,
+      rgba(0,188,212,0.8) 180deg,
+      rgba(0,188,212,1) 225deg,
+      rgba(0,188,212,0.8) 270deg,
+      rgba(0,188,212,0.5) 315deg,
+      transparent 315deg,
+      transparent 360deg
+    );
+    clip-path:polygon(0% 100%, 100% 100%, 100% 50%, 0% 50%);
+    transform:rotate(225deg);
+  }
+  
+  /* Líneas de marcación */
+  .gauge-ticks {
+    position:absolute;
     width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:8px
+    height:100%;
   }
-  .gauge{
-    width:320px;
-    height:320px;
+  .tick {
+    position:absolute;
+    width:2px;
+    height:12px;
+    background:rgba(255,255,255,0.5);
+    transform-origin:50% 140px;
+    left:calc(50% - 1px);
+    top:0;
+  }
+  .tick.major {
+    width:3px;
+    height:18px;
+    background:#fff;
+  }
+  
+  /* Números del gauge */
+  .gauge-numbers {
+    position:absolute;
+    width:100%;
+    height:100%;
+    color:var(--muted);
+    font-size:12px;
+    font-weight:600;
+  }
+  .number {
+    position:absolute;
+    transform-origin:50% 140px;
+    left:50%;
+    top:25px;
+    transform:translateX(-50%) rotate(var(--rot));
+    text-align:center;
+  }
+  
+  /* Aguja */
+  .gauge-needle {
+    --rot:225deg;
+    position:absolute;
+    width:3px;
+    height:100px;
+    background:linear-gradient(to top, #fff, #ccecff);
+    border-radius:2px;
+    transform-origin:50% 140px;
+    left:calc(50% - 1.5px);
+    top:0;
+    transform:rotate(var(--rot));
+    z-index:10;
+    box-shadow:0 0 10px rgba(0,188,212,0.5);
+  }
+  
+  /* Centro de la aguja */
+  .needle-center {
+    position:absolute;
+    width:20px;
+    height:20px;
+    background:#0b1220;
+    border:3px solid var(--accent);
     border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    /* solo franja exterior de color */
-    background:
-      radial-gradient(circle at center, #0b1220 70%, transparent 70%),
-      conic-gradient(
-        #03202b 0deg,
-        #03202b 40deg,
-        #003f5c 40deg,
-        #003f5c 120deg,
-        var(--yellow) 120deg,
-        var(--yellow) 180deg,
-        var(--orange) 180deg,
-        var(--orange) 240deg,
-        var(--danger) 240deg,
-        var(--danger) 360deg
-      );
-    box-shadow: inset 0 -20px 40px rgba(0,0,0,0.6), 0 8px 30px rgba(3,8,20,0.6);
-    position:relative;
-    border: 6px solid rgba(255,255,255,0.02);
+    left:calc(50% - 10px);
+    top:calc(140px - 10px);
+    z-index:11;
+    box-shadow:0 0 15px rgba(0,188,212,0.3);
   }
-  /* inner overlay limpio */
-  .gauge-inner{
-    width:70%;
-    height:70%;
-    border-radius:50%;
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.45));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    position:relative;
-    box-shadow: inset 0 8px 20px rgba(0,0,0,0.6);
-    z-index:3;
+  
+  /* Display de temperatura debajo del centro */
+  .temp-display {
+    position:absolute;
+    top:150px;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    width:100%;
   }
-  .temp-value{
-    font-size:56px;
+  .temp-value {
+    font-size:42px;
     font-weight:800;
     color:#fff;
-    text-shadow:0 6px 20px rgba(0,0,0,0.6)
+    text-shadow:0 4px 15px rgba(0,0,0,0.6);
+    line-height:1;
   }
-  .temp-unit-center{
-    font-size:18px;
+  .temp-unit {
+    font-size:20px;
     color:var(--muted);
-    margin-top:4px;
+    margin-left:4px;
   }
-  .gauge-needle{
-    --rot:0deg;
-    position:absolute;
-    width:8px;
-    height:42%;
-    background:linear-gradient(180deg,#fff,#ccecff);
-    border-radius:6px;
-    transform-origin:50% 90%;
-    transform:translateY(-4%) rotate(var(--rot));
-    box-shadow:0 8px 18px rgba(0,0,0,0.6);
-    z-index:2;
-  }
-  .gauge-center-dot{
-    position:absolute;
-    width:26px;
-    height:26px;
-    border-radius:50%;
-    background:#031017;
-    border:4px solid rgba(255,255,255,0.06);
-    z-index:4
-  }
-  .meta-center{
+  .temp-label {
     font-size:14px;
     color:var(--muted);
-    margin-top:8px;
-    text-align:center;
+    margin-top:4px;
   }
 
   /* right column */
@@ -288,19 +323,31 @@
   <div class="main-grid">
     <div class="card">
       <div class="gauge-wrap">
-        <div class="gauge-card">
-          <div class="gauge" id="gauge">
-            <div class="gauge-needle" id="needle" style="--rot:0deg"></div>
-            <div class="gauge-inner">
-              <div class="temp-value" id="temp-digital">--.-</div>
-              <div class="temp-unit-center">°C</div>
-            </div>
-            <div class="gauge-center-dot"></div>
+        <div class="gauge-container">
+          <!-- Semicírculo del gauge -->
+          <div class="gauge-semicircle"></div>
+          
+          <!-- Marcaciones -->
+          <div class="gauge-ticks" id="gauge-ticks"></div>
+          
+          <!-- Números -->
+          <div class="gauge-numbers" id="gauge-numbers"></div>
+          
+          <!-- Aguja -->
+          <div class="gauge-needle" id="needle" style="--rot:225deg"></div>
+          
+          <!-- Centro -->
+          <div class="needle-center"></div>
+          
+          <!-- Display de temperatura -->
+          <div class="temp-display">
+            <div class="temp-value" id="temp-digital">--.-<span class="temp-unit">°C</span></div>
+            <div class="temp-label">TEMPERATURA ACTUAL</div>
           </div>
         </div>
 
         <!-- Texto bajo el dial -->
-        <div id="gauge-sub" class="meta-center">
+        <div id="gauge-sub" class="meta-center" style="margin-top:120px">
           Última actualización: --
         </div>
         <div style="margin-top:10px;display:flex;flex-direction:column;align-items:center;gap:4px;">
@@ -374,6 +421,46 @@
   };
 
   // =============================================
+  // INICIALIZACIÓN DEL GAUGE (marcas y números)
+  // =============================================
+  function initGauge() {
+    const ticksContainer = document.getElementById('gauge-ticks');
+    const numbersContainer = document.getElementById('gauge-numbers');
+    
+    // Rango: 15°C a 100°C
+    const minTemp = 15;
+    const maxTemp = 100;
+    const range = maxTemp - minTemp;
+    
+    // Ángulo: 225° (izquierda) a 315° (derecha) = 90° de arco
+    const startAngle = 225; // grados
+    const endAngle = 315;   // grados
+    const angleRange = endAngle - startAngle;
+    
+    // Crear marcas cada 5°C
+    for (let temp = minTemp; temp <= maxTemp; temp += 5) {
+      // Calcular posición angular
+      const percent = (temp - minTemp) / range;
+      const angle = startAngle + (percent * angleRange);
+      
+      // Crear marca
+      const tick = document.createElement('div');
+      tick.className = temp % 25 === 0 ? 'tick major' : 'tick';
+      tick.style.transform = `rotate(${angle}deg)`;
+      ticksContainer.appendChild(tick);
+      
+      // Crear número para marcas principales (cada 25°C)
+      if (temp % 25 === 0) {
+        const number = document.createElement('div');
+        number.className = 'number';
+        number.textContent = temp;
+        number.style.setProperty('--rot', `-${angle}deg`);
+        numbersContainer.appendChild(number);
+      }
+    }
+  }
+
+  // =============================================
   // FUNCIONES PRINCIPALES
   // =============================================
   
@@ -403,9 +490,15 @@
     // Actualizar valor digital
     tempDigital.textContent = temp.toFixed(1);
     
-    // Calcular rotación de la aguja (0° = 0°C, 360° = 100°C)
-    const rotation = Math.min(temp * 3.6, 360); // Máximo 360°
-    needle.style.setProperty('--rot', `${rotation}deg`);
+    // Calcular ángulo (15°C = 225°, 100°C = 315°)
+    const minTemp = 15;
+    const maxTemp = 100;
+    const clampedTemp = Math.max(minTemp, Math.min(maxTemp, temp));
+    const percent = (clampedTemp - minTemp) / (maxTemp - minTemp);
+    const angle = 225 + (percent * 90); // 225° a 315°
+    
+    // Actualizar aguja
+    needle.style.setProperty('--rot', `${angle}deg`);
     
     // Cambiar color según temperatura
     if (temp >= 20 && temp <= 30) {
@@ -512,6 +605,9 @@
   // INICIALIZACIÓN
   // =============================================
   document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar gauge
+    initGauge();
+    
     // Actualizar inmediatamente
     updateDashboard();
     
