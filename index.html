@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -87,7 +88,7 @@
     padding:15px;
   }
 
-  /* GAUGE PRINCIPAL - MÁS PEQUEÑO */
+  /* GAUGE PRINCIPAL */
   .gauge-section{
     background:var(--card);
     border-radius:12px;
@@ -97,7 +98,7 @@
     box-shadow:0 8px 25px rgba(2,6,23,0.5);
   }
 
-  /* CONTENEDOR GAUGE MÁS COMPACTO */
+  /* CONTENEDOR GAUGE */
   .gauge-container{
     position:relative;
     width:280px;
@@ -136,49 +137,42 @@
     opacity:0.35;
   }
 
-  /* MARCACIONES - CORREGIDAS */
-  .gauge-ticks{
+  /* MARCAS EN CADA NÚMERO - SIMPLIFICADO */
+  .gauge-marks{
     position:absolute;
     width:100%;
     height:100%;
   }
-  .tick{
+  .gauge-mark{
     position:absolute;
-    background:#fff;
-    transform-origin:50% 140px;
-    left:calc(50% - 0.5px);
-    top:0;
-  }
-  .tick.minor{
-    width:1px;
-    height:6px;
-    background:rgba(255,255,255,0.6);
-  }
-  .tick.major{
-    width:2px;
+    width:3px;
     height:12px;
     background:#fff;
-    box-shadow:0 0 3px rgba(255,255,255,0.5);
+    transform-origin:50% 140px;
+    left:calc(50% - 1.5px);
+    top:0;
+    box-shadow:0 0 4px rgba(255,255,255,0.5);
   }
 
-  /* NÚMEROS SOBRE EL DIAL - BIEN POSICIONADOS */
+  /* NÚMEROS SOBRE EL DIAL */
   .gauge-numbers{
     position:absolute;
     width:100%;
     height:100%;
     color:#fff;
-    font-size:12px;
+    font-size:13px;
     font-weight:600;
     text-shadow:0 1px 3px rgba(0,0,0,0.8);
   }
   .gauge-number{
     position:absolute;
     text-align:center;
-    width:20px;
-    margin-left:-10px;
+    width:24px;
+    margin-left:-12px;
+    z-index:5;
   }
 
-  /* AGUJA - CORREGIDA */
+  /* AGUJA */
   .gauge-needle{
     --rot:0deg;
     position:absolute;
@@ -208,7 +202,7 @@
     box-shadow:0 0 6px rgba(255,202,40,0.4);
   }
 
-  /* TEMPERATURA DIGITAL GRANDE */
+  /* TEMPERATURA DIGITAL */
   .temp-display{
     text-align:center;
     margin-top:10px;
@@ -246,7 +240,7 @@
     color:var(--muted);
   }
 
-  /* PANEL DE ESTADOS - EN FILA DEBAJO DEL GAUGE */
+  /* PANEL DE ESTADOS */
   .status-panel{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -275,7 +269,7 @@
     min-height:18px;
   }
 
-  /* LEDS MÁS PEQUEÑOS */
+  /* LEDS */
   .status-led{
     width:60px;
     height:60px;
@@ -367,7 +361,7 @@
     .needle-center{
       top:calc(130px - 7px);
     }
-    .tick{
+    .gauge-mark{
       transform-origin:50% 130px;
     }
     .temp-value{
@@ -390,7 +384,7 @@
 </style>
 </head>
 <body>
-  <!-- HEADER FIJADO -->
+  <!-- HEADER -->
   <header class="main-header">
     <div class="header-content">
       <img src="logo-millares.png" alt="Logo Millares" class="logo-img">
@@ -409,7 +403,7 @@
       <div class="gauge-container">
         <div class="gauge-background"></div>
         <div class="gauge-arc"></div>
-        <div class="gauge-ticks" id="gauge-ticks"></div>
+        <div class="gauge-marks" id="gauge-marks"></div>
         <div class="gauge-numbers" id="gauge-numbers"></div>
         <div class="gauge-needle" id="needle" style="--rot:0deg"></div>
         <div class="needle-center"></div>
@@ -424,16 +418,14 @@
         <div class="update-note">Actualización automática cada 30 segundos</div>
       </div>
 
-      <!-- PANEL DE ESTADOS EN FILA -->
+      <!-- PANEL DE ESTADOS -->
       <div class="status-panel">
-        <!-- ALARMA - IZQUIERDA -->
         <div class="status-card">
           <div class="status-title">Estado alarma</div>
           <div id="alarma-text" class="status-value">Normal</div>
           <div id="led-alarma" class="status-led led-green">✓</div>
         </div>
 
-        <!-- RESET - DERECHA -->
         <div class="status-card">
           <div class="status-title">Reset sistema</div>
           <div id="reset-text" class="status-value">No activo</div>
@@ -441,7 +433,7 @@
         </div>
       </div>
 
-      <!-- BANNERS DE ALERTA -->
+      <!-- BANNERS -->
       <div id="alarm-banner" class="alert-banner alert-alarm">ALARMA ACTIVADA</div>
       <div id="reset-banner" class="alert-banner alert-reset">RESET RECOMENDADO</div>
 
@@ -459,26 +451,25 @@
 
 <script>
 // =============================================
-// CONFIGURACIÓN THINGSPEAK - REEMPLAZA CON TUS CREDENCIALES
+// CONFIGURACIÓN THINGSPEAK
 // =============================================
 const CONFIG = {
   thingspeak: {
-    // ⚠️ REEMPLAZA ESTOS VALORES ⚠️
-    channelId: '3194050',                  // TU CHANNEL ID
-    readApiKey: '4L6L63LNFO0YG4BB',        // TU READ API KEY
-    field: 1,                              // Campo temperatura (1, 2, 3...)
+    channelId: '3194050',
+    readApiKey: '4L6L63LNFO0YG4BB',
+    field: 1,
     url: 'https://api.thingspeak.com/channels/'
   },
-  updateInterval: 30000,    // 30 segundos
-  alarmThreshold: 50,       // °C para alarma
-  resetThreshold: 60        // °C para reset
+  updateInterval: 30000,
+  alarmThreshold: 50,
+  resetThreshold: 60
 };
 
 // =============================================
-// INICIALIZAR GAUGE CON NÚMEROS Y MARCAS
+// INICIALIZAR GAUGE - UNA MARCA POR CADA NÚMERO
 // =============================================
 function initGauge() {
-  const ticksContainer = document.getElementById('gauge-ticks');
+  const marksContainer = document.getElementById('gauge-marks');
   const numbersContainer = document.getElementById('gauge-numbers');
   
   const minTemp = -15;
@@ -490,51 +481,43 @@ function initGauge() {
   const endAngle = 0;
   const angleRange = 180;
   
-  // Crear marcas y números
-  for (let temp = minTemp; temp <= maxTemp; temp += 5) {
+  // Números que queremos mostrar (uno por marca)
+  const numbers = [-15, 0, 25, 50, 75, 100];
+  
+  // Crear una marca y número para cada valor
+  numbers.forEach(temp => {
     const percent = (temp - minTemp) / range;
     const angle = startAngle - (percent * angleRange);
     
-    // Marcas menores cada 5°C
-    if (temp % 5 === 0) {
-      const tick = document.createElement('div');
-      tick.className = 'tick minor';
-      tick.style.transform = `rotate(${angle}deg)`;
-      ticksContainer.appendChild(tick);
-    }
+    // Crear MARCA (raya) bajo el número
+    const mark = document.createElement('div');
+    mark.className = 'gauge-mark';
+    mark.style.transform = `rotate(${angle}deg)`;
+    marksContainer.appendChild(mark);
     
-    // Números principales cada 25°C + extremos
-    if (temp % 25 === 0 || temp === minTemp || temp === maxTemp) {
-      // Marca mayor
-      const majorTick = document.createElement('div');
-      majorTick.className = 'tick major';
-      majorTick.style.transform = `rotate(${angle}deg)`;
-      ticksContainer.appendChild(majorTick);
-      
-      // Número sobre el dial
-      const number = document.createElement('div');
-      number.className = 'gauge-number';
-      number.textContent = temp;
-      
-      // Posicionar sobre el arco del gauge
-      const rad = angle * (Math.PI / 180);
-      const radius = 110; // Radio ajustado
-      const centerX = 140; // Centro del gauge
-      const centerY = 140; // Centro del gauge
-      
-      const x = centerX + Math.cos(rad) * radius;
-      const y = centerY - Math.sin(rad) * radius;
-      
-      number.style.left = `${x}px`;
-      number.style.top = `${y}px`;
-      
-      // Rotar números para seguir la curva
-      const textRotation = angle > 90 ? angle - 180 : angle;
-      number.style.transform = `translateX(-50%) rotate(${textRotation}deg)`;
-      
-      numbersContainer.appendChild(number);
-    }
-  }
+    // Crear NÚMERO
+    const number = document.createElement('div');
+    number.className = 'gauge-number';
+    number.textContent = temp;
+    
+    // Posicionar número JUSTO ARRIBA de la marca
+    const rad = angle * (Math.PI / 180);
+    const radius = 105; // Radio más pequeño para números más cerca del centro
+    const centerX = 140;
+    const centerY = 140;
+    
+    const x = centerX + Math.cos(rad) * radius;
+    const y = centerY - Math.sin(rad) * radius;
+    
+    number.style.left = `${x}px`;
+    number.style.top = `${y}px`;
+    
+    // Rotar números para que sigan la curva
+    const textRotation = angle > 90 ? angle - 180 : angle;
+    number.style.transform = `translateX(-50%) rotate(${textRotation}deg)`;
+    
+    numbersContainer.appendChild(number);
+  });
 }
 
 // =============================================
@@ -551,7 +534,7 @@ async function fetchThingSpeakData() {
     return parseFloat(data[`field${field}`]) || 0;
   } catch (error) {
     console.error('Error conectando a ThingSpeak:', error);
-    return 25.3; // Valor de prueba
+    return 25.3;
   }
 }
 
@@ -562,32 +545,29 @@ function updateGauge(temp) {
   const needle = document.getElementById('needle');
   const tempDigital = document.getElementById('temp-digital');
   
-  // Actualizar valor digital
   tempDigital.textContent = temp.toFixed(1);
   
-  // Calcular ángulo para la aguja
   const minTemp = -15;
   const maxTemp = 100;
   const clampedTemp = Math.max(minTemp, Math.min(maxTemp, temp));
   const percent = (clampedTemp - minTemp) / (maxTemp - minTemp);
   const angle = 180 - (percent * 180);
   
-  // Mover aguja
   needle.style.setProperty('--rot', `${angle}deg`);
   
-  // Color del valor según temperatura
+  // Color según temperatura
   if (temp >= 20 && temp <= 30) {
-    tempDigital.style.color = '#00c853'; // Verde (ideal)
+    tempDigital.style.color = '#00c853';
   } else if (temp > 30 && temp <= 50) {
-    tempDigital.style.color = '#ffca28'; // Amarillo (precaución)
+    tempDigital.style.color = '#ffca28';
   } else if (temp > 50 && temp <= CONFIG.alarmThreshold) {
-    tempDigital.style.color = '#ff9800'; // Naranja (alerta)
+    tempDigital.style.color = '#ff9800';
   } else if (temp > CONFIG.alarmThreshold) {
-    tempDigital.style.color = '#ff1744'; // Rojo (peligro/alarma)
+    tempDigital.style.color = '#ff1744';
   } else if (temp < 0) {
-    tempDigital.style.color = '#00bcd4'; // Azul (frío extremo)
+    tempDigital.style.color = '#00bcd4';
   } else {
-    tempDigital.style.color = '#ffca28'; // Amarillo por defecto
+    tempDigital.style.color = '#ffca28';
   }
   
   return temp;
@@ -604,7 +584,6 @@ function updateStatus(temp) {
   const alarmBanner = document.getElementById('alarm-banner');
   const resetBanner = document.getElementById('reset-banner');
   
-  // Estado de alarma
   if (temp > CONFIG.alarmThreshold) {
     alarmLed.className = 'status-led led-red';
     alarmLed.textContent = '!';
@@ -625,7 +604,6 @@ function updateStatus(temp) {
     alarmBanner.style.display = 'none';
   }
   
-  // Estado de reset
   if (temp > CONFIG.resetThreshold) {
     resetLed.className = 'status-led led-red';
     resetLed.textContent = '!';
@@ -642,7 +620,7 @@ function updateStatus(temp) {
 }
 
 // =============================================
-// ACTUALIZAR TIMESTAMP Y CONEXIÓN
+// ACTUALIZAR TIMESTAMP
 // =============================================
 function updateTimestamp(success = true) {
   const now = new Date();
@@ -667,7 +645,7 @@ function updateTimestamp(success = true) {
 }
 
 // =============================================
-// FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN
+// FUNCIÓN PRINCIPAL
 // =============================================
 async function updateDashboard() {
   try {
@@ -681,16 +659,11 @@ async function updateDashboard() {
 }
 
 // =============================================
-// INICIALIZAR TODO
+// INICIALIZAR
 // =============================================
 document.addEventListener('DOMContentLoaded', function() {
-  // Inicializar gauge
   initGauge();
-  
-  // Primera actualización
   updateDashboard();
-  
-  // Actualizar cada 30 segundos
   setInterval(updateDashboard, CONFIG.updateInterval);
 });
 </script>
