@@ -1,5 +1,4 @@
 
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -137,7 +136,7 @@
     opacity:0.35;
   }
 
-  /* MARCAS EN CADA NÚMERO - SIMPLIFICADO */
+  /* MARCAS EN FORMA DE U INVERTIDA */
   .gauge-marks{
     position:absolute;
     width:100%;
@@ -146,21 +145,22 @@
   .gauge-mark{
     position:absolute;
     width:3px;
-    height:12px;
+    height:15px;
     background:#fff;
     transform-origin:50% 140px;
     left:calc(50% - 1.5px);
     top:0;
     box-shadow:0 0 4px rgba(255,255,255,0.5);
+    z-index:5;
   }
 
-  /* NÚMEROS SOBRE EL DIAL */
+  /* NÚMEROS EN FORMA DE U INVERTIDA */
   .gauge-numbers{
     position:absolute;
     width:100%;
     height:100%;
     color:#fff;
-    font-size:13px;
+    font-size:14px;
     font-weight:600;
     text-shadow:0 1px 3px rgba(0,0,0,0.8);
   }
@@ -169,10 +169,10 @@
     text-align:center;
     width:24px;
     margin-left:-12px;
-    z-index:5;
+    z-index:6;
   }
 
-  /* AGUJA */
+  /* AGUJA EN CENTRO CORRECTO */
   .gauge-needle{
     --rot:0deg;
     position:absolute;
@@ -466,7 +466,7 @@ const CONFIG = {
 };
 
 // =============================================
-// INICIALIZAR GAUGE - UNA MARCA POR CADA NÚMERO
+// INICIALIZAR GAUGE - MARCAS EN FORMA DE U INVERTIDA
 // =============================================
 function initGauge() {
   const marksContainer = document.getElementById('gauge-marks');
@@ -476,20 +476,25 @@ function initGauge() {
   const maxTemp = 100;
   const range = maxTemp - minTemp;
   
-  // Ángulo: -15°C = 180° (izquierda), 100°C = 0° (derecha)
-  const startAngle = 180;
-  const endAngle = 0;
-  const angleRange = 180;
+  // Ángulo CORREGIDO para U invertida
+  // -15°C = 180° (extremo izquierdo del arco)
+  // 100°C = 0° (extremo derecho del arco)
+  const startAngle = 180;  // Izquierda
+  const endAngle = 0;      // Derecha
+  const angleRange = 180;  // 180 grados de arco
   
-  // Números que queremos mostrar (uno por marca)
+  // Números que queremos mostrar
   const numbers = [-15, 0, 25, 50, 75, 100];
   
   // Crear una marca y número para cada valor
   numbers.forEach(temp => {
     const percent = (temp - minTemp) / range;
+    
+    // Calcular ángulo CORREGIDO para U invertida
+    // Los ángulos van de 180° (izquierda) a 0° (derecha)
     const angle = startAngle - (percent * angleRange);
     
-    // Crear MARCA (raya) bajo el número
+    // Crear MARCA (raya)
     const mark = document.createElement('div');
     mark.className = 'gauge-mark';
     mark.style.transform = `rotate(${angle}deg)`;
@@ -500,20 +505,29 @@ function initGauge() {
     number.className = 'gauge-number';
     number.textContent = temp;
     
-    // Posicionar número JUSTO ARRIBA de la marca
+    // Posicionar número ARRIBA de la marca
     const rad = angle * (Math.PI / 180);
-    const radius = 105; // Radio más pequeño para números más cerca del centro
-    const centerX = 140;
-    const centerY = 140;
+    const radius = 100; // Radio para números
+    const centerX = 140; // Centro horizontal
+    const centerY = 140; // Centro vertical
     
+    // Calcular posición X,Y sobre el arco
     const x = centerX + Math.cos(rad) * radius;
     const y = centerY - Math.sin(rad) * radius;
     
     number.style.left = `${x}px`;
     number.style.top = `${y}px`;
     
-    // Rotar números para que sigan la curva
-    const textRotation = angle > 90 ? angle - 180 : angle;
+    // Rotar números para que sigan la curva del arco
+    let textRotation = 0;
+    if (angle > 90 && angle <= 180) {
+      // Lado izquierdo: rotar para que queden horizontales
+      textRotation = angle - 180;
+    } else if (angle >= 0 && angle <= 90) {
+      // Lado derecho: rotar para que queden horizontales
+      textRotation = angle;
+    }
+    
     number.style.transform = `translateX(-50%) rotate(${textRotation}deg)`;
     
     numbersContainer.appendChild(number);
@@ -539,7 +553,7 @@ async function fetchThingSpeakData() {
 }
 
 // =============================================
-// ACTUALIZAR GAUGE
+// ACTUALIZAR GAUGE - CALIBRACIÓN CORRECTA
 // =============================================
 function updateGauge(temp) {
   const needle = document.getElementById('needle');
@@ -551,6 +565,9 @@ function updateGauge(temp) {
   const maxTemp = 100;
   const clampedTemp = Math.max(minTemp, Math.min(maxTemp, temp));
   const percent = (clampedTemp - minTemp) / (maxTemp - minTemp);
+  
+  // Calcular ángulo CORREGIDO para U invertida
+  // -15°C = 180° (izquierda), 100°C = 0° (derecha)
   const angle = 180 - (percent * 180);
   
   needle.style.setProperty('--rot', `${angle}deg`);
