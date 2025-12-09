@@ -20,43 +20,40 @@
     --orange:#ff9800;
     --danger:#ff1744;
     --ok:#00c853;
-    --glass: rgba(255,255,255,0.03);
   }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;margin:0;padding:0}
   body{
-    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#071427;
+    color:#e9eef6;
     padding:0;
-    font-family:Inter,Arial,Helvetica,sans-serif;
-    background:linear-gradient(180deg,#020612 0%, #071427 100%);
-    color:#e6eef6;
-    -webkit-font-smoothing:antialiased;
+    margin:0;
     min-height:100vh;
   }
 
-  /* HEADER */
-  .main-header{
+  /* HEADER SIMPLE Y FIJO */
+  .header{
+    background:#0b1220;
     padding:12px 15px;
-    background:rgba(11, 18, 32, 0.95);
-    border-bottom:1px solid rgba(255,255,255,0.04);
+    border-bottom:1px solid rgba(255,255,255,0.05);
     position:sticky;
     top:0;
     z-index:100;
-    backdrop-filter:blur(5px);
   }
   .header-content{
     display:flex;
     align-items:center;
-    gap:12px;
+    gap:10px;
     max-width:900px;
     margin:0 auto;
   }
-  .logo-img{
-    width:42px;
-    height:42px;
+  .header-logo{
+    width:40px;
+    height:40px;
     border-radius:8px;
     object-fit:contain;
     background:rgba(255,255,255,0.05);
-    padding:4px;
+    padding:3px;
     border:1px solid rgba(0,188,212,0.2);
   }
   .header-text{
@@ -64,11 +61,10 @@
   }
   .header-text h1{
     margin:0;
-    font-size:17px;
+    font-size:16px;
     color:#fff;
-    letter-spacing:0.5px;
   }
-  .company-name{
+  .header-company{
     font-size:13px;
     color:#00bcd4;
     font-weight:600;
@@ -76,116 +72,118 @@
   }
   .header-subtitle{
     font-size:11px;
-    color:var(--muted);
+    color:#9fb3c8;
     margin-top:1px;
   }
 
   /* CONTENIDO PRINCIPAL */
-  .main-container{
+  .container{
     max-width:900px;
     margin:0 auto;
     padding:15px;
   }
 
-  /* GAUGE PRINCIPAL */
-  .gauge-section{
-    background:var(--card);
+  /* TARJETA PRINCIPAL */
+  .card{
+    background:#0b1220;
     border-radius:12px;
-    padding:20px 15px;
-    margin-bottom:15px;
+    padding:20px;
     border:1px solid rgba(255,255,255,0.03);
     box-shadow:0 8px 25px rgba(2,6,23,0.5);
   }
 
-  /* CONTENEDOR GAUGE MÁS SIMPLE */
+  /* ========== GAUGE NUEVO - TOTALMENTE CORREGIDO ========== */
   .gauge-container{
     position:relative;
     width:280px;
     height:140px;
-    margin:0 auto 15px auto;
+    margin:0 auto 20px auto;
   }
 
-  /* FONDO DEL GAUGE */
-  .gauge-background{
+  /* Fondo del semicírculo */
+  .gauge-base{
     position:absolute;
     width:280px;
     height:140px;
-    background:#0a1525;
+    background:#091425;
     border-radius:0 0 140px 140px;
     border:6px solid rgba(255,255,255,0.05);
     border-top:none;
-    box-shadow:inset 0 8px 15px rgba(0,0,0,0.6),
-               0 4px 12px rgba(0,0,0,0.3);
     overflow:hidden;
   }
 
-  /* ARCO DE COLORES SIMPLIFICADO */
+  /* Arco de colores */
   .gauge-arc{
     position:absolute;
     width:280px;
     height:140px;
     background:conic-gradient(
       from 180deg,
-      #00c853 0deg,      /* -15°C verde */
-      #ffca28 90deg,     /* 30°C amarillo */
-      #ff9800 135deg,    /* 60°C naranja */
-      #ff1744 180deg     /* 100°C rojo */
+      #00c853 0deg,
+      #ffca28 90deg,
+      #ff9800 135deg,
+      #ff1744 180deg
     );
     border-radius:0 0 140px 140px;
     clip-path:polygon(0% 70%, 100% 70%, 100% 100%, 0% 100%);
-    opacity:0.35;
+    opacity:0.3;
   }
 
-  /* CONTENEDOR PARA MARCAS Y NÚMEROS */
-  .gauge-scale{
+  /* MARCAS - POSICIONADAS MANUALMENTE SIN ROTACIÓN */
+  .gauge-marks{
     position:absolute;
     width:100%;
     height:100%;
   }
 
-  /* MARCA VERTICAL (siempre vertical, no rotada) */
-  .scale-mark{
+  /* Cada marca individual - posicionada con left/bottom */
+  .mark{
     position:absolute;
     width:2px;
-    height:15px;
+    height:12px;
     background:#fff;
     bottom:0;
-    left:50%;
-    margin-left:-1px;
-    transform-origin:50% 100%;
+    transform:translateX(-50%);
     z-index:5;
   }
 
-  /* NÚMERO - POSICIÓN FIJA SIN ROTACIÓN */
-  .scale-number{
+  /* NÚMEROS - POSICIONADOS MANUALMENTE */
+  .gauge-numbers{
     position:absolute;
+    width:100%;
+    height:100%;
     color:#fff;
-    font-size:14px;
+    font-size:13px;
     font-weight:600;
     text-shadow:0 1px 3px rgba(0,0,0,0.8);
+  }
+
+  /* Cada número individual */
+  .number{
+    position:absolute;
     text-align:center;
-    width:30px;
-    margin-left:-15px;
+    transform:translateX(-50%);
     z-index:6;
+    white-space:nowrap;
   }
 
   /* AGUJA SIMPLE */
-  .gauge-needle{
-    --rot:0deg;
+  .needle{
+    --angle:0deg;
     position:absolute;
     width:2px;
     height:90px;
     background:linear-gradient(to top, #ffca28, #ff9800);
     border-radius:1px;
     transform-origin:50% 100%;
-    left:calc(50% - 1px);
+    left:50%;
     bottom:0;
-    transform:rotate(var(--rot));
+    transform:translateX(-50%) rotate(var(--angle));
     z-index:20;
     box-shadow:0 0 6px rgba(255,202,40,0.6);
   }
 
-  /* CENTRO DE LA AGUJA */
+  /* Centro de la aguja */
   .needle-center{
     position:absolute;
     width:14px;
@@ -193,8 +191,9 @@
     background:#000;
     border:2px solid #ffca28;
     border-radius:50%;
-    left:calc(50% - 7px);
-    bottom:calc(0px - 7px);
+    left:50%;
+    bottom:-7px;
+    transform:translateX(-50%);
     z-index:21;
     box-shadow:0 0 6px rgba(255,202,40,0.4);
   }
@@ -202,7 +201,7 @@
   /* TEMPERATURA DIGITAL */
   .temp-display{
     text-align:center;
-    margin-top:10px;
+    margin:10px 0 20px 0;
   }
   .temp-value{
     font-size:42px;
@@ -210,7 +209,6 @@
     color:#ffca28;
     text-shadow:0 3px 10px rgba(255,202,40,0.3);
     line-height:1;
-    margin-bottom:5px;
   }
   .temp-unit{
     font-size:22px;
@@ -218,40 +216,40 @@
     margin-left:2px;
   }
 
-  /* INFO DEL GAUGE */
-  .gauge-info{
+  /* INFORMACIÓN */
+  .info{
     text-align:center;
-    margin-top:15px;
+    margin-bottom:20px;
   }
   .update-time{
     font-size:13px;
-    color:var(--muted);
-    margin:8px 0;
-    padding:6px 12px;
+    color:#9fb3c8;
+    margin:10px 0;
+    padding:8px 15px;
     background:rgba(255,255,255,0.02);
-    border-radius:6px;
+    border-radius:8px;
     display:inline-block;
   }
   .update-note{
     font-size:12px;
-    color:var(--muted);
+    color:#9fb3c8;
   }
 
   /* PANEL DE ESTADOS */
   .status-panel{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:12px;
-    margin-top:20px;
+    gap:15px;
+    margin:25px 0;
   }
 
   /* TARJETAS DE ESTADO */
   .status-card{
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.15));
+    background:rgba(255,255,255,0.02);
     border-radius:10px;
-    padding:12px;
-    border:1px solid rgba(255,255,255,0.03);
+    padding:15px;
     text-align:center;
+    border:1px solid rgba(255,255,255,0.03);
   }
   .status-title{
     font-weight:700;
@@ -259,10 +257,10 @@
     margin-bottom:8px;
     color:#fff;
   }
-  .status-value{
+  .status-text{
     font-size:12px;
-    color:var(--muted);
-    margin-bottom:10px;
+    color:#9fb3c8;
+    margin-bottom:12px;
     min-height:18px;
   }
 
@@ -280,30 +278,30 @@
     box-shadow:0 4px 10px rgba(0,0,0,0.4);
   }
   .led-green{
-    background:linear-gradient(180deg,var(--ok),#007a2b);
+    background:linear-gradient(180deg,#00c853,#007a2b);
     color:#021;
   }
   .led-red{
-    background:linear-gradient(180deg,var(--danger),#a1002b);
+    background:linear-gradient(180deg,#ff1744,#a1002b);
     color:#250005;
   }
   .led-yellow{
-    background:linear-gradient(180deg,var(--yellow),#b37a00);
+    background:linear-gradient(180deg,#ffca28,#b37a00);
     color:#2b1a00;
   }
   .led-off{
     background:rgba(255,255,255,0.02);
-    color:var(--muted);
+    color:#9fb3c8;
   }
 
-  /* INFO DE CONEXIÓN */
+  /* INFO CONEXIÓN */
   .connection-info{
     display:flex;
     justify-content:space-between;
     font-size:12px;
-    color:var(--muted);
+    color:#9fb3c8;
     margin-top:20px;
-    padding-top:12px;
+    padding-top:15px;
     border-top:1px solid rgba(255,255,255,0.03);
   }
 
@@ -322,15 +320,15 @@
     color:#fff;
   }
   .alert-reset{
-    background:linear-gradient(90deg,#352e0b, #7a5d00);
+    background:linear-gradient(90deg,#352e0b,#7a5d00);
     color:#fff;
   }
 
   /* FOOTER */
-  .main-footer{
+  .footer{
     text-align:center;
     font-size:11px;
-    color:var(--muted);
+    color:#9fb3c8;
     margin-top:20px;
     padding-top:15px;
     border-top:1px solid rgba(255,255,255,0.03);
@@ -338,20 +336,23 @@
 
   /* RESPONSIVE */
   @media(max-width:620px){
-    .main-container{
+    .container{
       padding:10px;
+    }
+    .card{
+      padding:15px;
     }
     .gauge-container{
       width:260px;
       height:130px;
     }
-    .gauge-background,
+    .gauge-base,
     .gauge-arc{
       width:260px;
       height:130px;
       border-radius:0 0 130px 130px;
     }
-    .gauge-needle{
+    .needle{
       height:85px;
     }
     .temp-value{
@@ -366,7 +367,7 @@
       text-align:center;
       gap:8px;
     }
-    .logo-img{
+    .header-logo{
       width:36px;
       height:36px;
     }
@@ -375,35 +376,38 @@
 </head>
 <body>
   <!-- HEADER -->
-  <header class="main-header">
+  <header class="header">
     <div class="header-content">
-      <img src="logo-millares.png" alt="Logo Millares" class="logo-img">
+      <img src="logo-millares.png" alt="Logo Millares" class="header-logo">
       <div class="header-text">
         <h1>MONITOREO VARIABLES</h1>
-        <div class="company-name">MILLARES BAGB SPA IOT CHILE</div>
+        <div class="header-company">MILLARES BAGB SPA IOT CHILE</div>
         <div class="header-subtitle">Temperatura · Alarma · Reset</div>
       </div>
     </div>
   </header>
 
   <!-- CONTENIDO PRINCIPAL -->
-  <main class="main-container">
-    <!-- GAUGE -->
-    <section class="gauge-section">
+  <main class="container">
+    <div class="card">
+      <!-- GAUGE NUEVO -->
       <div class="gauge-container">
-        <div class="gauge-background"></div>
+        <div class="gauge-base"></div>
         <div class="gauge-arc"></div>
-        <div class="gauge-scale" id="gauge-scale"></div>
-        <div class="gauge-needle" id="needle" style="--rot:0deg"></div>
+        <div class="gauge-marks" id="gaugeMarks"></div>
+        <div class="gauge-numbers" id="gaugeNumbers"></div>
+        <div class="needle" id="needle" style="--angle:0deg"></div>
         <div class="needle-center"></div>
       </div>
 
+      <!-- TEMPERATURA DIGITAL -->
       <div class="temp-display">
-        <div class="temp-value" id="temp-digital">25.3<span class="temp-unit">°C</span></div>
+        <div class="temp-value" id="tempValue">25.3<span class="temp-unit">°C</span></div>
       </div>
 
-      <div class="gauge-info">
-        <div id="update-time" class="update-time">Última actualización: --</div>
+      <!-- INFORMACIÓN -->
+      <div class="info">
+        <div id="updateTime" class="update-time">Última actualización: --</div>
         <div class="update-note">Actualización automática cada 30 segundos</div>
       </div>
 
@@ -411,36 +415,37 @@
       <div class="status-panel">
         <div class="status-card">
           <div class="status-title">Estado alarma</div>
-          <div id="alarma-text" class="status-value">Normal</div>
-          <div id="led-alarma" class="status-led led-green">✓</div>
+          <div id="alarmText" class="status-text">Normal</div>
+          <div id="ledAlarm" class="status-led led-green">✓</div>
         </div>
 
         <div class="status-card">
           <div class="status-title">Reset sistema</div>
-          <div id="reset-text" class="status-value">No activo</div>
-          <div id="led-reset" class="status-led led-off">-</div>
+          <div id="resetText" class="status-text">No activo</div>
+          <div id="ledReset" class="status-led led-off">-</div>
         </div>
       </div>
 
       <!-- BANNERS -->
-      <div id="alarm-banner" class="alert-banner alert-alarm">ALARMA ACTIVADA</div>
-      <div id="reset-banner" class="alert-banner alert-reset">RESET RECOMENDADO</div>
+      <div id="alarmBanner" class="alert-banner alert-alarm" style="display:none">ALARMA ACTIVADA</div>
+      <div id="resetBanner" class="alert-banner alert-reset" style="display:none">RESET RECOMENDADO</div>
 
       <!-- INFO CONEXIÓN -->
       <div class="connection-info">
-        <div id="last-ping">Último ping: --</div>
-        <div id="conn-status">Conexión: --</div>
+        <div id="lastPing">Último ping: --</div>
+        <div id="connStatus">Conexión: --</div>
       </div>
-    </section>
 
-    <footer class="main-footer">
-      &copy; 2024 MILLARES BAGB SPA IOT CHILE - Sistema IoT
-    </footer>
+      <!-- FOOTER -->
+      <div class="footer">
+        &copy; 2024 MILLARES BAGB SPA IOT CHILE - Sistema IoT
+      </div>
+    </div>
   </main>
 
 <script>
 // =============================================
-// CONFIGURACIÓN THINGSPEAK
+// CONFIGURACIÓN
 // =============================================
 const CONFIG = {
   thingspeak: {
@@ -455,64 +460,65 @@ const CONFIG = {
 };
 
 // =============================================
-// INICIALIZAR GAUGE - NUEVO ENFOQUE SIMPLE
+// CREAR GAUGE - POSICIÓN EXACTA DE MARCAS Y NÚMEROS
 // =============================================
 function initGauge() {
-  const scaleContainer = document.getElementById('gauge-scale');
+  const marksContainer = document.getElementById('gaugeMarks');
+  const numbersContainer = document.getElementById('gaugeNumbers');
   
-  const minTemp = -15;
-  const maxTemp = 100;
-  const range = maxTemp - minTemp;
-  
-  // Valores para mostrar (marcas y números)
+  // Valores a mostrar
   const values = [-15, 0, 25, 50, 75, 100];
   
-  // Para un semicírculo de 180° (de -90° a 90°)
-  const startAngle = -90;  // Izquierda (-15°C)
-  const endAngle = 90;     // Derecha (100°C)
-  const angleRange = endAngle - startAngle; // 180°
+  // Coordenadas del semicírculo
+  const centerX = 140;  // Centro horizontal
+  const bottomY = 140;  // Línea de base
+  const radius = 130;   // Radio del semicírculo
   
-  // Radio del semicírculo
-  const radius = 130;
+  // Ángulos correspondientes (de -90° a 90°)
+  const angles = [-90, -54, -18, 18, 54, 90]; // Distribuidos uniformemente
   
-  values.forEach(temp => {
-    // Calcular porcentaje y ángulo
-    const percent = (temp - minTemp) / range;
-    const angle = startAngle + (percent * angleRange);
-    
-    // Convertir a radianes
+  // Crear marcas y números
+  for (let i = 0; i < values.length; i++) {
+    const temp = values[i];
+    const angle = angles[i];
     const rad = angle * (Math.PI / 180);
     
-    // Calcular posición en el semicírculo
-    const centerX = 140; // Centro del gauge
-    const bottomY = 140; // Línea de base
-    
-    // Posición de la marca (en el borde del semicírculo)
+    // Posición de la MARCA (en el borde)
     const markX = centerX + Math.cos(rad) * radius;
     const markY = bottomY - Math.sin(rad) * radius;
     
-    // Crear MARCA (vertical siempre)
+    // Crear marca
     const mark = document.createElement('div');
-    mark.className = 'scale-mark';
+    mark.className = 'mark';
     mark.style.left = `${markX}px`;
     mark.style.bottom = `${markY}px`;
+    marksContainer.appendChild(mark);
     
-    // Crear NÚMERO (posición fija)
-    const number = document.createElement('div');
-    number.className = 'scale-number';
-    number.textContent = temp;
-    
-    // Posicionar número un poco más arriba de la marca
-    const numberOffset = 20;
+    // Posición del NÚMERO (un poco más arriba)
+    const numberOffset = 22;
     const numberX = centerX + Math.cos(rad) * (radius + numberOffset);
     const numberY = bottomY - Math.sin(rad) * (radius + numberOffset);
     
+    // Crear número
+    const number = document.createElement('div');
+    number.className = 'number';
+    number.textContent = temp;
     number.style.left = `${numberX}px`;
     number.style.bottom = `${numberY}px`;
     
-    scaleContainer.appendChild(mark);
-    scaleContainer.appendChild(number);
-  });
+    // Rotar número para que siga la curva (opcional)
+    if (angle < -45) {
+      number.style.transform = `translateX(-50%) rotate(-30deg)`;
+    } else if (angle < 0) {
+      number.style.transform = `translateX(-50%) rotate(-15deg)`;
+    } else if (angle < 45) {
+      number.style.transform = `translateX(-50%) rotate(15deg)`;
+    } else {
+      number.style.transform = `translateX(-50%) rotate(30deg)`;
+    }
+    
+    numbersContainer.appendChild(number);
+  }
 }
 
 // =============================================
@@ -528,7 +534,7 @@ async function fetchThingSpeakData() {
     const data = await response.json();
     return parseFloat(data[`field${field}`]) || 0;
   } catch (error) {
-    console.error('Error conectando a ThingSpeak:', error);
+    console.error('Error:', error);
     return 25.3;
   }
 }
@@ -538,36 +544,34 @@ async function fetchThingSpeakData() {
 // =============================================
 function updateGauge(temp) {
   const needle = document.getElementById('needle');
-  const tempDigital = document.getElementById('temp-digital');
+  const tempValue = document.getElementById('tempValue');
   
-  tempDigital.textContent = temp.toFixed(1);
+  // Actualizar valor digital
+  tempValue.textContent = temp.toFixed(1);
   
+  // Calcular ángulo (-15°C = -90°, 100°C = 90°)
   const minTemp = -15;
   const maxTemp = 100;
   const clampedTemp = Math.max(minTemp, Math.min(maxTemp, temp));
   const percent = (clampedTemp - minTemp) / (maxTemp - minTemp);
+  const angle = -90 + (percent * 180);
   
-  // Calcular ángulo para la aguja (-90° a 90°)
-  const startAngle = -90;
-  const endAngle = 90;
-  const angleRange = endAngle - startAngle;
-  const angle = startAngle + (percent * angleRange);
+  // Actualizar aguja
+  needle.style.setProperty('--angle', `${angle}deg`);
   
-  needle.style.setProperty('--rot', `${angle}deg`);
-  
-  // Color según temperatura
+  // Color del valor
   if (temp >= 20 && temp <= 30) {
-    tempDigital.style.color = '#00c853';
+    tempValue.style.color = '#00c853';
   } else if (temp > 30 && temp <= 50) {
-    tempDigital.style.color = '#ffca28';
+    tempValue.style.color = '#ffca28';
   } else if (temp > 50 && temp <= CONFIG.alarmThreshold) {
-    tempDigital.style.color = '#ff9800';
+    tempValue.style.color = '#ff9800';
   } else if (temp > CONFIG.alarmThreshold) {
-    tempDigital.style.color = '#ff1744';
+    tempValue.style.color = '#ff1744';
   } else if (temp < 0) {
-    tempDigital.style.color = '#00bcd4';
+    tempValue.style.color = '#00bcd4';
   } else {
-    tempDigital.style.color = '#ffca28';
+    tempValue.style.color = '#ffca28';
   }
   
   return temp;
@@ -577,13 +581,14 @@ function updateGauge(temp) {
 // ACTUALIZAR ESTADOS
 // =============================================
 function updateStatus(temp) {
-  const alarmLed = document.getElementById('led-alarma');
-  const alarmText = document.getElementById('alarma-text');
-  const resetLed = document.getElementById('led-reset');
-  const resetText = document.getElementById('reset-text');
-  const alarmBanner = document.getElementById('alarm-banner');
-  const resetBanner = document.getElementById('reset-banner');
+  const alarmLed = document.getElementById('ledAlarm');
+  const alarmText = document.getElementById('alarmText');
+  const resetLed = document.getElementById('ledReset');
+  const resetText = document.getElementById('resetText');
+  const alarmBanner = document.getElementById('alarmBanner');
+  const resetBanner = document.getElementById('resetBanner');
   
+  // Alarma
   if (temp > CONFIG.alarmThreshold) {
     alarmLed.className = 'status-led led-red';
     alarmLed.textContent = '!';
@@ -604,6 +609,7 @@ function updateStatus(temp) {
     alarmBanner.style.display = 'none';
   }
   
+  // Reset
   if (temp > CONFIG.resetThreshold) {
     resetLed.className = 'status-led led-red';
     resetLed.textContent = '!';
@@ -631,10 +637,10 @@ function updateTimestamp(success = true) {
   });
   const dateStr = now.toLocaleDateString('es-CL');
   
-  document.getElementById('update-time').textContent = `Última actualización: ${dateStr} ${timeStr}`;
-  document.getElementById('last-ping').textContent = `Ping: ${timeStr}`;
+  document.getElementById('updateTime').textContent = `Última actualización: ${dateStr} ${timeStr}`;
+  document.getElementById('lastPing').textContent = `Ping: ${timeStr}`;
   
-  const statusEl = document.getElementById('conn-status');
+  const statusEl = document.getElementById('connStatus');
   if (success) {
     statusEl.textContent = 'Conexión: OK';
     statusEl.style.color = '#00c853';
