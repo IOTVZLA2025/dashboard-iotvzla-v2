@@ -1,420 +1,675 @@
 
 
-  <!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>MONITOREO VARIABLES MILLARES</title>
-
 <link rel="icon" href="logo-millares.png" type="image/png">
 <link rel="apple-touch-icon" href="logo-millares.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b1622" />
 
 <style>
-  :root{
-    --bg:#071427;
-    --card:#0b1220;
-    --accent:#00bcd4;
-    --muted:#9fb3c8;
-    --yellow:#ffca28;
-    --orange:#ff9800;
-    --danger:#ff1744;
-    --ok:#00c853;
+  /* RESET Y VARIABLES */
+  :root {
+    --bg: #071427;
+    --card: #0b1220;
+    --accent: #00bcd4;
+    --muted: #9fb3c8;
+    --green: #00c853;
+    --yellow: #ffca28;
+    --orange: #ff9800;
+    --red: #ff1744;
+    --blue: #00bcd4;
   }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    padding:0;
-    font-family:Inter, Arial, Helvetica, sans-serif;
-    background:linear-gradient(180deg,#020612 0%, #071427 100%);
-    color:#e6eef6;
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
-
+  
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: #e9eef6;
+    min-height: 100vh;
+  }
+  
   /* HEADER */
-  .main-header{
-    padding:12px 15px;
-    background:rgba(11,18,32,0.95);
-    border-bottom:1px solid rgba(255,255,255,0.04);
-    position:sticky; top:0; z-index:100;
-    backdrop-filter:blur(5px);
+  .header {
+    background: var(--card);
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
   }
-  .header-content{
-    display:flex; align-items:center; gap:12px; max-width:900px; margin:0 auto;
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 1000px;
+    margin: 0 auto;
   }
-  .logo-img{width:42px; height:42px; border-radius:8px; object-fit:contain; background:rgba(255,255,255,0.05); padding:4px; border:1px solid rgba(0,188,212,0.2);}
-  .header-text{flex:1;}
-  .header-text h1{margin:0; font-size:17px; color:#fff;}
-  .company-name{font-size:13px; color:#00bcd4; font-weight:600; margin-top:2px;}
-  .header-subtitle{font-size:11px; color:var(--muted); margin-top:1px;}
-
-  /* MAIN */
-  .main-container{max-width:900px; margin:0 auto; padding:15px;}
-
-  /* CARD GAUGE */
-  .gauge-section{
-    background:var(--card);
-    border-radius:12px;
-    padding:18px;
-    margin-bottom:15px;
-    border:1px solid rgba(255,255,255,0.03);
-    box-shadow:0 8px 25px rgba(2,6,23,0.5);
+  
+  .header-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    object-fit: contain;
+    background: rgba(255,255,255,0.05);
+    padding: 3px;
+    border: 1px solid var(--accent);
   }
-
-  /* Gauge wrapper (reducido 20% como pediste) */
-  .gauge-container{
-    position:relative;
-    width: 224px;    /* 280 * 0.8 */
-    height:128px;    /* 160 * 0.8 */
-    margin:0 auto;
+  
+  .header-text h1 {
+    font-size: 17px;
+    color: white;
+    margin-bottom: 3px;
   }
-
-  .gauge-background{
-    position:absolute;
-    width:224px; height:112px;
-    background:#0a1525;
-    border-radius:0 0 112px 112px;
-    border:5px solid rgba(255,255,255,0.05);
-    border-top:none;
-    box-shadow:inset 0 8px 15px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.3);
-    overflow:hidden;
-    top:8px;
-    left:0;
+  
+  .header-company {
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 600;
   }
-
-  .gauge-arc{
-    position:absolute;
-    width:224px; height:120px;
-    background:conic-gradient(from 180deg, #00c853 0deg, #ffca28 90deg, #ff9800 135deg, #ff1744 180deg);
-    border-radius:0 0 120px 120px;
-    clip-path:polygon(0% 70%, 100% 70%, 100% 100%, 0% 100%);
-    opacity:0.35;
-    top:8px;
-    left:0;
+  
+  .header-subtitle {
+    font-size: 12px;
+    color: var(--muted);
   }
-
-  /* MARKS & NUMBERS container sized to gauge */
-  .gauge-marks{position:absolute; width:224px; height:120px; top:8px; left:0; pointer-events:none;}
-  .gauge-numbers{position:absolute; width:224px; height:120px; top:8px; left:0; pointer-events:none;}
-
-  /* Generic mark */
-  .gauge-mark{
-    position:absolute;
-    width:2px; height:12px;
-    background:rgba(255,255,255,0.9);
-    border-radius:1px;
-    transform-origin:50% 120px;
-    z-index:12;
-    box-shadow:0 1px 3px rgba(0,0,0,0.6);
+  
+  /* CONTENIDO PRINCIPAL */
+  .container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 15px;
   }
-
-  /* minor tick (for 5°C steps) */
-  .gauge-minor{width:1px;height:8px;background:rgba(255,255,255,0.45);}
-
-  .gauge-number{
-    position:absolute;
-    font-size:12px; font-weight:700; color:#fff;
-    text-shadow:0 1px 2px rgba(0,0,0,0.6);
-    transform:translate(-50%,-50%);
-    z-index:14;
+  
+  /* LAYOUT PRINCIPAL */
+  .main-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
   }
-
-  /* Needle */
-  .gauge-needle{
-    --rot:0deg;
-    position:absolute;
-    width:3px; height:80px; /* scaled */
-    background:linear-gradient(to top,#ffca28,#ff9800);
-    left:50%; top:8px;
-    transform-origin:50% 120px;
-    transform:rotate(var(--rot));
-    z-index:20;
-    border-radius:2px;
-    box-shadow:0 2px 6px rgba(255,170,30,0.25);
+  
+  @media (max-width: 768px) {
+    .main-content {
+      grid-template-columns: 1fr;
+    }
   }
-  .needle-center{
-    position:absolute; width:14px; height:14px;
-    background:black; border:3px solid #ffca28; border-radius:50%;
-    left:50%; top:112px; transform:translate(-50%,-50%); z-index:22;
-    box-shadow:0 2px 6px rgba(0,0,0,0.6);
+  
+  /* TERMÓMETRO VERTICAL */
+  .thermometer-section {
+    background: var(--card);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
   }
-
-  /* Digital temp */
-  .temp-display{ text-align:center; margin-top:12px; }
-  .temp-value{ font-size:34px; font-weight:800; color:#ffca28; line-height:1; }
-  .temp-unit{ font-size:18px; opacity:0.85; }
-
-  /* Status */
-  .status-panel{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
-  .status-card{ background:rgba(255,255,255,0.03); border-radius:10px; padding:12px; text-align:center; }
-  .status-title{ font-size:14px; font-weight:700; margin-bottom:8px; color:#fff; }
-  .status-value{ font-size:12px; opacity:0.85; margin-bottom:8px; }
-  .status-led{ width:54px; height:54px; margin:0 auto; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; }
-  .led-green{ background:linear-gradient(180deg,var(--ok),#007a2b); color:#021; }
-  .led-yellow{ background:linear-gradient(180deg,var(--yellow),#b37a00); color:#2b1a00; }
-  .led-red{ background:linear-gradient(180deg,var(--danger),#a1002b); color:#250005; }
-  .led-off{ background:rgba(255,255,255,0.02); color:var(--muted); }
-
-  .connection-info{ text-align:center; margin-top:14px; font-size:12px; color:var(--muted); }
-
-  /* Footer */
-  .main-footer{ text-align:center; font-size:11px; color:var(--muted); margin-top:14px; }
-
-  /* Responsive */
-  @media(max-width:620px){
-    .header-content{ flex-direction:column; text-align:center; gap:8px; }
-    .gauge-container{ width:88%; height:auto; max-width:320px; }
-    .gauge-background, .gauge-arc, .gauge-marks, .gauge-numbers { left:0; right:0; margin:0 auto; }
-    .temp-value{ font-size:30px; }
-    .status-panel{ grid-template-columns:1fr; }
+  
+  .thermometer-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* ESCALA VERTICAL */
+  .temperature-scale {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 25px;
+  }
+  
+  /* NÚMEROS DE LA ESCALA (vertical) */
+  .scale-numbers {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 300px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    text-align: right;
+    min-width: 30px;
+  }
+  
+  /* TERMÓMETRO PRINCIPAL */
+  .thermometer {
+    width: 35px;
+    height: 300px;
+    background: #0a1525;
+    border-radius: 20px;
+    position: relative;
+    border: 3px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  
+  /* FONDO DEL TERMÓMETRO */
+  .thermometer-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+      var(--blue) 0%,          /* -15°C: azul */
+      var(--green) 15%,        /* 0°C: verde */
+      var(--yellow) 50%,       /* 42.5°C: amarillo */
+      var(--orange) 70%,       /* 70°C: naranja */
+      var(--red) 100%          /* 100°C: rojo */
+    );
+    opacity: 0.2;
+  }
+  
+  /* MERCURIO/INDICADOR */
+  .mercury {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 25%; /* Comienza en 25.3°C */
+    background: linear-gradient(to top,
+      var(--green),
+      var(--yellow),
+      var(--orange),
+      var(--red)
+    );
+    border-radius: 15px;
+    transition: height 1s ease, background 1s ease;
+  }
+  
+  /* BULBO INFERIOR */
+  .thermometer-bulb {
+    width: 65px;
+    height: 65px;
+    background: #0a1525;
+    border-radius: 50%;
+    margin-top: -30px;
+    position: relative;
+    border: 3px solid rgba(255,255,255,0.08);
+  }
+  
+  .bulb-inner {
+    width: 45px;
+    height: 45px;
+    background: var(--red);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.4;
+  }
+  
+  /* DISPLAY DE TEMPERATURA */
+  .temperature-display {
+    text-align: center;
+    margin: 30px 0 20px 0;
+  }
+  
+  .temperature-value {
+    font-size: 56px;
+    font-weight: 800;
+    color: var(--yellow);
+    text-shadow: 0 4px 15px rgba(255,202,40,0.3);
+    line-height: 1;
+  }
+  
+  .temperature-unit {
+    font-size: 30px;
+    color: rgba(255,255,255,0.7);
+    margin-left: 5px;
+  }
+  
+  .temperature-label {
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-weight: 600;
+  }
+  
+  /* MARCADORES EN EL TERMÓMETRO */
+  .thermometer-marks {
+    position: absolute;
+    right: -20px;
+    top: 0;
+    height: 100%;
+    width: 20px;
+  }
+  
+  .mark {
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background: white;
+    opacity: 0.6;
+    right: 0;
+  }
+  
+  /* INFO DE ACTUALIZACIÓN */
+  .update-info {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .update-time {
+    font-size: 14px;
+    color: var(--muted);
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  
+  .update-note {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  
+  /* PANEL DERECHO */
+  .status-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .status-card {
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+  
+  .status-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+  }
+  
+  .status-text {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 15px;
+    min-height: 20px;
+  }
+  
+  /* LEDS */
+  .status-led {
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+  }
+  
+  .led-green {
+    background: linear-gradient(135deg, var(--green), #007a2b);
+    color: #021;
+  }
+  
+  .led-red {
+    background: linear-gradient(135deg, var(--red), #a1002b);
+    color: #250005;
+  }
+  
+  .led-yellow {
+    background: linear-gradient(135deg, var(--yellow), #b37a00);
+    color: #2b1a00;
+  }
+  
+  .led-off {
+    background: rgba(255,255,255,0.03);
+    color: var(--muted);
+  }
+  
+  /* BANNERS DE ALERTA */
+  .alert-banner {
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    display: none;
+  }
+  
+  .alert-alarm {
+    background: linear-gradient(90deg, #311000, #6b0000);
+    color: white;
+  }
+  
+  .alert-reset {
+    background: linear-gradient(90deg, #352e0b, #7a5d00);
+    color: white;
+  }
+  
+  /* INFO CONEXIÓN */
+  .connection-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.03);
+  }
+  
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.03);
+  }
+  
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .container {
+      padding: 10px;
+    }
+    
+    .temperature-scale {
+      gap: 15px;
+    }
+    
+    .thermometer {
+      width: 30px;
+      height: 250px;
+    }
+    
+    .temperature-value {
+      font-size: 48px;
+    }
+    
+    .header-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 8px;
+    }
+    
+    .header-logo {
+      width: 38px;
+      height: 38px;
+    }
   }
 </style>
 </head>
 <body>
-
-<header class="main-header">
-  <div class="header-content">
-    <img src="logo-millares.png" class="logo-img" alt="Logo">
-    <div class="header-text">
-      <h1>MONITOREO VARIABLES</h1>
-      <div class="company-name">MILLARES BAGB SPA IOT CHILE</div>
-      <div class="header-subtitle">Temperatura · Alarma · Reset</div>
-    </div>
-  </div>
-</header>
-
-<main class="main-container">
-  <section class="gauge-section">
-
-    <div class="gauge-container" id="gauge-root">
-      <div class="gauge-background"></div>
-      <div class="gauge-arc"></div>
-
-      <!-- containers where JS will draw marks & numbers -->
-      <div id="gauge-marks" class="gauge-marks"></div>
-      <div id="gauge-numbers" class="gauge-numbers"></div>
-
-      <!-- single synchronized needle -->
-      <div id="needle" class="gauge-needle" style="--rot:0deg"></div>
-      <div class="needle-center"></div>
-    </div>
-
-    <div class="temp-display">
-      <div id="temp-digital" class="temp-value">0.0<span class="temp-unit">°C</span></div>
-    </div>
-
-    <div class="connection-info" id="update-time">Última actualización: --</div>
-
-    <div class="status-panel">
-      <div class="status-card">
-        <div class="status-title">Estado alarma</div>
-        <div id="alarma-text" class="status-value">Normal</div>
-        <div id="led-alarma" class="status-led led-green">✓</div>
-      </div>
-
-      <div class="status-card">
-        <div class="status-title">Reset sistema</div>
-        <div id="reset-text" class="status-value">No activo</div>
-        <div id="led-reset" class="status-led led-off">-</div>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-content">
+      <img src="logo-millares.png" alt="Logo Millares" class="header-logo">
+      <div class="header-text">
+        <h1>MONITOREO VARIABLES</h1>
+        <div class="header-company">MILLARES BAGB SPA IOT CHILE</div>
+        <div class="header-subtitle">Temperatura · Alarma · Reset</div>
       </div>
     </div>
+  </header>
 
-    <div class="connection-info" id="ping-status">Ping: -- &nbsp; · &nbsp; Conexión: --</div>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container">
+    <div class="main-content">
+      <!-- TERMÓMETRO VERTICAL -->
+      <section class="thermometer-section">
+        <div class="thermometer-wrapper">
+          <div class="temperature-scale">
+            <!-- Números de la escala -->
+            <div class="scale-numbers">
+              <div>100°C</div>
+              <div>75°C</div>
+              <div>50°C</div>
+              <div>25°C</div>
+              <div>0°C</div>
+              <div>-15°C</div>
+            </div>
+            
+            <!-- Termómetro principal -->
+            <div class="thermometer">
+              <div class="thermometer-bg"></div>
+              <div class="mercury" id="mercury"></div>
+              
+              <!-- Marcadores -->
+              <div class="thermometer-marks">
+                <div class="mark" style="top: 0%"></div>    <!-- 100°C -->
+                <div class="mark" style="top: 25%"></div>   <!-- 75°C -->
+                <div class="mark" style="top: 50%"></div>   <!-- 50°C -->
+                <div class="mark" style="top: 75%"></div>   <!-- 25°C -->
+                <div class="mark" style="top: 88.5%"></div> <!-- 0°C -->
+                <div class="mark" style="top: 100%"></div>  <!-- -15°C -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- Bulbo inferior -->
+          <div class="thermometer-bulb">
+            <div class="bulb-inner"></div>
+          </div>
+          
+          <!-- Display de temperatura -->
+          <div class="temperature-display">
+            <div class="temperature-value" id="temperatureValue">25.3<span class="temperature-unit">°C</span></div>
+            <div class="temperature-label">TEMPERATURA ACTUAL</div>
+          </div>
+          
+          <!-- Info de actualización -->
+          <div class="update-info">
+            <div id="updateTime" class="update-time">Última actualización: --</div>
+            <div class="update-note">Actualización automática cada 30 segundos</div>
+          </div>
+        </div>
+      </section>
 
-  </section>
+      <!-- PANEL DERECHO -->
+      <aside class="status-panel">
+        <div class="status-card">
+          <div class="status-title">Estado alarma</div>
+          <div id="alarmText" class="status-text">Normal</div>
+          <div id="ledAlarm" class="status-led led-green">✓</div>
+        </div>
 
-  <footer class="main-footer">
-    &copy; 2024 MILLARES BAGB SPA IOT CHILE - Sistema IoT
-  </footer>
-</main>
+        <div class="status-card">
+          <div class="status-title">Reset sistema</div>
+          <div id="resetText" class="status-text">No activo</div>
+          <div id="ledReset" class="status-led led-off">-</div>
+        </div>
+
+        <div id="alarmBanner" class="alert-banner alert-alarm" style="display:none">ALARMA ACTIVADA</div>
+        <div id="resetBanner" class="alert-banner alert-reset" style="display:none">RESET RECOMENDADO</div>
+
+        <div class="connection-info">
+          <div id="lastPing">Último ping: --</div>
+          <div id="connStatus">Conexión: --</div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      &copy; 2024 MILLARES BAGB SPA IOT CHILE - Sistema IoT
+    </footer>
+  </main>
 
 <script>
-/* ================= CONFIG ================= */
+// =============================================
+// CONFIGURACIÓN
+// =============================================
 const CONFIG = {
   thingspeak: {
-    channelId: "3194050",
-    readApiKey: "4L6L63LNFO0YG4BB",
+    channelId: '3194050',
+    readApiKey: '4L6L63LNFO0YG4BB',
     field: 1,
-    url: "https://api.thingspeak.com/channels/"
+    url: 'https://api.thingspeak.com/channels/'
   },
-  updateInterval: 30000,   // 30s
-  alarmThreshold: 50,      // alarma rojo > 50
-  warningThreshold: 30,    // ambar > 30
-  resetThreshold: 60,
-  minTemp: -15,
-  maxTemp: 100
+  updateInterval: 30000,
+  alarmThreshold: 50,
+  resetThreshold: 60
 };
 
-/* ================ UTILS ================ */
-function nowStr() {
-  const d = new Date();
-  return d.toLocaleDateString('es-CL') + ' ' + d.toLocaleTimeString('es-CL');
-}
-
-/* ================ DRAW GAUGE ================ */
-function initGauge() {
-  const marks = document.getElementById('gauge-marks');
-  const nums = document.getElementById('gauge-numbers');
-
-  marks.innerHTML = '';
-  nums.innerHTML = '';
-
-  // gauge geometry scaled to CSS sizes
-  const gw = document.querySelector('.gauge-container').offsetWidth; // ~224
-  const gh = document.querySelector('.gauge-container').offsetHeight; // ~128
-  // center relative to container
-  const cx = gw / 2;
-  const cy = gh; // base of semicircle
-  const radiusMarks = Math.min(gw, gh*2) * 0.55; // where ticks sit
-  const radiusNums = radiusMarks - 28;            // numbers inside ticks
-
-  const min = CONFIG.minTemp;
-  const max = CONFIG.maxTemp;
-  const range = max - min;
-
-  // draw minor ticks every 5°C and major every 25°C
-  for (let t = min; t <= max; t += 5) {
-    const pct = (t - min) / range;
-    const angle = 180 - pct * 180; // left 180 -> right 0
-    const rad = angle * Math.PI / 180;
-    const mx = cx + Math.cos(rad) * radiusMarks;
-    const my = cy - Math.sin(rad) * radiusMarks;
-
-    const mark = document.createElement('div');
-    mark.className = 'gauge-mark' + (t % 25 === 0 ? '' : ' gauge-minor');
-    mark.style.left = `${mx}px`;
-    mark.style.top  = `${my}px`;
-    mark.style.transform = `translate(-50%,-50%) rotate(${angle}deg)`;
-    marks.appendChild(mark);
-
-    // major number every 25 (and extremes)
-    if (t % 25 === 0 || t === min || t === max) {
-      const nx = cx + Math.cos(rad) * radiusNums;
-      const ny = cy - Math.sin(rad) * radiusNums;
-      const num = document.createElement('div');
-      num.className = 'gauge-number';
-      num.textContent = t;
-      num.style.left = `${nx}px`;
-      num.style.top  = `${ny}px`;
-      nums.appendChild(num);
-    }
-  }
-}
-
-/* ================ THINGSPEAK FETCH ================ */
+// =============================================
+// OBTENER DATOS DE THINGSPEAK
+// =============================================
 async function fetchThingSpeakData() {
   const { channelId, readApiKey, field, url } = CONFIG.thingspeak;
   const apiUrl = `${url}${channelId}/fields/${field}/last.json?api_key=${readApiKey}`;
+  
   try {
-    const r = await fetch(apiUrl, {cache: "no-store"});
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const j = await r.json();
-    return parseFloat(j[`field${field}`]);
-  } catch (e) {
-    console.warn('ThingSpeak fetch error:', e);
-    return null;
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error('Error en la respuesta');
+    const data = await response.json();
+    return parseFloat(data[`field${field}`]) || 0;
+  } catch (error) {
+    console.error('Error:', error);
+    return 25.3;
   }
 }
 
-/* ================ UPDATE GAUGE ================ */
-function updateGauge(temp) {
-  const needle = document.getElementById('needle');
-  const digital = document.getElementById('temp-digital');
-
-  if (temp === null || isNaN(temp)) {
-    digital.innerHTML = '--.<span class="temp-unit">°C</span>';
-    return;
-  }
-
-  // display
-  digital.innerHTML = temp.toFixed(1) + '<span class="temp-unit">°C</span>';
-
-  // clamp & compute angle
-  const min = CONFIG.minTemp, max = CONFIG.maxTemp;
-  const clamped = Math.max(min, Math.min(max, temp));
-  const pct = (clamped - min) / (max - min);
-  const angle = 180 - pct * 180; // 180 left -> 0 right
-
-  needle.style.setProperty('--rot', angle + 'deg');
-
-  // update ping status
-  document.getElementById('ping-status').textContent = `Ping: ${new Date().toLocaleTimeString('es-CL')} · Conexión: OK`;
-}
-
-/* ================ UPDATE STATUS (LEDS) ================ */
-function updateStatus(temp) {
-  const alarmLed = document.getElementById('led-alarma');
-  const alarmText = document.getElementById('alarma-text');
-  const resetLed = document.getElementById('led-reset');
-  const resetText = document.getElementById('reset-text');
-
-  if (temp === null || isNaN(temp)) {
-    alarmLed.className = 'status-led led-off'; alarmLed.textContent = '-';
-    alarmText.textContent = 'Sin datos';
-    resetLed.className = 'status-led led-off'; resetText.textContent = 'No activo';
-    return;
-  }
-
-  if (temp > CONFIG.alarmThreshold) {
-    alarmLed.className = 'status-led led-red'; alarmLed.textContent = '!';
-    alarmText.textContent = 'ALARMA';
-    alarmText.style.color = '#ff1744';
-  } else if (temp > CONFIG.warningThreshold) {
-    alarmLed.className = 'status-led led-yellow'; alarmLed.textContent = '⚠';
-    alarmText.textContent = 'ADVERTENCIA';
-    alarmText.style.color = '#ffca28';
+// =============================================
+// ACTUALIZAR TERMÓMETRO
+// =============================================
+function updateThermometer(temp) {
+  const mercury = document.getElementById('mercury');
+  const tempValue = document.getElementById('temperatureValue');
+  
+  // Actualizar valor digital
+  tempValue.textContent = temp.toFixed(1);
+  
+  // Calcular altura del mercurio (-15°C a 100°C)
+  const minTemp = -15;
+  const maxTemp = 100;
+  const clampedTemp = Math.max(minTemp, Math.min(maxTemp, temp));
+  const percent = (clampedTemp - minTemp) / (maxTemp - minTemp);
+  const heightPercent = percent * 100;
+  
+  // Actualizar altura del mercurio
+  mercury.style.height = `${heightPercent}%`;
+  
+  // Cambiar color según temperatura
+  if (temp >= 20 && temp <= 30) {
+    mercury.style.background = 'linear-gradient(to top, var(--green), #00e676)';
+    tempValue.style.color = 'var(--green)';
+  } else if (temp > 30 && temp <= 50) {
+    mercury.style.background = 'linear-gradient(to top, var(--yellow), #ffd54f)';
+    tempValue.style.color = 'var(--yellow)';
+  } else if (temp > 50 && temp <= CONFIG.alarmThreshold) {
+    mercury.style.background = 'linear-gradient(to top, var(--orange), #ffb74d)';
+    tempValue.style.color = 'var(--orange)';
+  } else if (temp > CONFIG.alarmThreshold) {
+    mercury.style.background = 'linear-gradient(to top, var(--red), #ff5252)';
+    tempValue.style.color = 'var(--red)';
+  } else if (temp < 0) {
+    mercury.style.background = 'linear-gradient(to top, var(--blue), #26c6da)';
+    tempValue.style.color = 'var(--blue)';
   } else {
-    alarmLed.className = 'status-led led-green'; alarmLed.textContent = '✓';
+    mercury.style.background = 'linear-gradient(to top, var(--green), var(--yellow))';
+    tempValue.style.color = 'var(--yellow)';
+  }
+  
+  return temp;
+}
+
+// =============================================
+// ACTUALIZAR ESTADOS
+// =============================================
+function updateStatus(temp) {
+  const alarmLed = document.getElementById('ledAlarm');
+  const alarmText = document.getElementById('alarmText');
+  const resetLed = document.getElementById('ledReset');
+  const resetText = document.getElementById('resetText');
+  const alarmBanner = document.getElementById('alarmBanner');
+  const resetBanner = document.getElementById('resetBanner');
+  
+  // Alarma
+  if (temp > CONFIG.alarmThreshold) {
+    alarmLed.className = 'status-led led-red';
+    alarmLed.textContent = '!';
+    alarmText.textContent = 'ALARMA ACTIVADA';
+    alarmText.style.color = 'var(--red)';
+    alarmBanner.style.display = 'block';
+  } else if (temp > 30) {
+    alarmLed.className = 'status-led led-yellow';
+    alarmLed.textContent = '⚠';
+    alarmText.textContent = 'ADVERTENCIA';
+    alarmText.style.color = 'var(--yellow)';
+    alarmBanner.style.display = 'none';
+  } else {
+    alarmLed.className = 'status-led led-green';
+    alarmLed.textContent = '✓';
     alarmText.textContent = 'Normal';
     alarmText.style.color = '';
+    alarmBanner.style.display = 'none';
   }
-
-  // reset indicator logic (you can change thresholds)
+  
+  // Reset
   if (temp > CONFIG.resetThreshold) {
-    resetLed.className = 'status-led led-red'; resetLed.textContent = '!';
+    resetLed.className = 'status-led led-red';
+    resetLed.textContent = '!';
     resetText.textContent = 'RESET RECOMENDADO';
-    resetText.style.color = '#ff1744';
+    resetText.style.color = 'var(--red)';
+    resetBanner.style.display = 'block';
   } else {
-    resetLed.className = 'status-led led-off'; resetLed.textContent = '-';
+    resetLed.className = 'status-led led-off';
+    resetLed.textContent = '-';
     resetText.textContent = 'No activo';
     resetText.style.color = '';
+    resetBanner.style.display = 'none';
   }
 }
 
-/* ================ TIMESTAMP ================ */
-function updateTimestamp(ok = true) {
-  document.getElementById('update-time').textContent = 'Última actualización: ' + nowStr();
+// =============================================
+// ACTUALIZAR TIMESTAMP
+// =============================================
+function updateTimestamp(success = true) {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('es-CL', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    second: '2-digit' 
+  });
+  const dateStr = now.toLocaleDateString('es-CL');
+  
+  document.getElementById('updateTime').textContent = `Última actualización: ${dateStr} ${timeStr}`;
+  document.getElementById('lastPing').textContent = `Ping: ${timeStr}`;
+  
+  const statusEl = document.getElementById('connStatus');
+  if (success) {
+    statusEl.textContent = 'Conexión: OK';
+    statusEl.style.color = 'var(--green)';
+  } else {
+    statusEl.textContent = 'Conexión: ERROR';
+    statusEl.style.color = 'var(--red)';
+  }
 }
 
-/* ================ MAIN UPDATE ================ */
+// =============================================
+// FUNCIÓN PRINCIPAL
+// =============================================
 async function updateDashboard() {
-  const t = await fetchThingSpeakData();
-  updateGauge(t);
-  updateStatus(t);
-  updateTimestamp();
+  try {
+    const temperature = await fetchThingSpeakData();
+    updateThermometer(temperature);
+    updateStatus(temperature);
+    updateTimestamp(true);
+  } catch (error) {
+    updateTimestamp(false);
+  }
 }
 
-/* ================ INIT ================ */
-document.addEventListener('DOMContentLoaded', () => {
-  initGauge();
+// =============================================
+// INICIALIZAR
+// =============================================
+document.addEventListener('DOMContentLoaded', function() {
   updateDashboard();
   setInterval(updateDashboard, CONFIG.updateInterval);
-
-  // re-init gauge on resize so positions adapt on mobile
-  window.addEventListener('resize', () => {
-    // small debounce
-    clearTimeout(window._gaugeResizeTimer);
-    window._gaugeResizeTimer = setTimeout(() => {
-      initGauge();
-      // refresh display values after reinit
-      updateDashboard();
-    }, 250);
-  });
 });
 </script>
-
 </body>
 </html>
