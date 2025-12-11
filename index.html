@@ -133,21 +133,20 @@
     font-size:18px;
     color:var(--muted);
     margin-top:2px;
-  }
   .gauge-needle{
-    --rot:0deg;
-    position:absolute;
-    bottom:8px;
-    left:50%;
-    width:4px;
-    height:100px;
-    background:linear-gradient(to top,#fff,#ccecff);
-    border-radius:2px;
-    transform-origin:50% 100%;
-    transform:translateX(-50%) rotate(var(--rot));
-    box-shadow:0 2px 8px rgba(0,0,0,0.6);
-    z-index:3;
-  }
+  --rot:0deg;
+  position:absolute;
+  bottom:-5px;              /* antes estaba en 8px */
+  left:50%;
+  width:4px;
+  height:80px;              /* puedes probar 70–90px */
+  background:linear-gradient(to top,#fff,#ccecff);
+  border-radius:2px;
+  transform-origin:50% 100%;
+  transform:translateX(-50%) rotate(var(--rot));
+  box-shadow:0 2px 8px rgba(0,0,0,0.6);
+  z-index:3;
+}
   .gauge-center-dot{
     position:absolute;
     width:18px;
@@ -407,6 +406,7 @@ if ('serviceWorker' in navigator){
 </script>
 </body>
 </html>
+
 
 
 
