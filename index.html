@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -82,37 +83,38 @@
     margin-top:-25px;
   }
   .gauge{
-    width:186px;
-    height:93px;
-    border-radius:0 0 186px 186px;
+    width:200px;
+    height:100px;
+    border-radius:200px 200px 0 0;
     background:
-      radial-gradient(ellipse farthest-corner at 50% 100%, #0b1220 52%, transparent 52%),
-      conic-gradient(from 180deg at 50% 100%, var(--yellow) 0deg, var(--yellow) 180deg);
+      conic-gradient(from 180deg at 50% 100%, var(--yellow) 0deg, var(--yellow) 180deg),
+      radial-gradient(ellipse farthest-corner at 50% 0%, #0b1220 52%, transparent 52%);
     box-shadow: inset 0 -15px 30px rgba(0,0,0,0.7), 0 8px 30px rgba(3,8,20,0.6);
     position:relative;
-    border: 6px solid rgba(255,255,255,0.12);
-    border-top: none;
-    margin-top:6px;
+    border: 6px solid rgba(255,255,255,0.15);
+    border-bottom: none;
   }
-  /* Escala semicírculo */
+  /* Escala semicírculo perfectamente posicionada */
   .scale-mark{
     position:absolute;
     font-size:11px;
     font-weight:700;
-    color:rgba(255,255,255,0.85);
+    color:rgba(255,255,255,0.9);
     text-shadow:0 1px 3px rgba(0,0,0,0.8);
+    left:50%;
+    transform:translateX(-50%);
   }
-  .scale-mark.m0{left:12px;top:18px}
-  .scale-mark.m10{left:8px;top:42px}
-  .scale-mark.m20{left:12px;top:65px}
-  .scale-mark.m30{left:28px;top:82px}
-  .scale-mark.m40{left:50px;top:92px}
-  .scale-mark.m50{left:75px;top:96px}
-  .scale-mark.m60{left:105px;top:92px}
-  .scale-mark.m70{left:130px;top:82px}
-  .scale-mark.m80{left:148px;top:65px}
-  .scale-mark.m90{right:8px;top:42px}
-  .scale-mark.m100{right:12px;top:18px}
+  .scale-mark.m0{top:8px}
+  .scale-mark.m10{top:15px}
+  .scale-mark.m20{top:25px}
+  .scale-mark.m30{top:37px}
+  .scale-mark.m40{top:52px}
+  .scale-mark.m50{left:50%;top:68px}
+  .scale-mark.m60{left:52%;top:82px}
+  .scale-mark.m70{left:58%;top:92px}
+  .scale-mark.m80{left:68%;top:98px}
+  .scale-mark.m90{left:82%;top:99px}
+  .scale-mark.m100{top:8px;right:12px;left:auto}
   .temp-display{
     position:absolute;
     bottom:-35px;
@@ -135,26 +137,26 @@
   .gauge-needle{
     --rot:0deg;
     position:absolute;
-    width:6px;
-    height:38px;
-    background:linear-gradient(180deg,#fff,#ccecff);
-    border-radius:4px;
-    transform-origin:50% 100%;
-    bottom:12px;
+    bottom:8px;
     left:50%;
+    width:4px;
+    height:32px;
+    background:linear-gradient(to top,#fff,#ccecff);
+    border-radius:2px;
+    transform-origin:50% 100%;
     transform:translateX(-50%) rotate(var(--rot));
-    box-shadow:0 4px 12px rgba(0,0,0,0.6);
+    box-shadow:0 2px 8px rgba(0,0,0,0.6);
     z-index:3;
   }
   .gauge-center-dot{
     position:absolute;
-    width:20px;
-    height:20px;
+    width:18px;
+    height:18px;
     border-radius:50%;
-    background:#031017;
-    border:3px solid rgba(255,255,255,0.1);
+    background:linear-gradient(180deg,#031017,#0b1220);
+    border:3px solid rgba(255,255,255,0.15);
     z-index:4;
-    bottom:6px;
+    bottom:2px;
     left:50%;
     transform:translateX(-50%);
   }
@@ -308,7 +310,7 @@ function setNeedleByTemp(temp){
   const min = TEMP_MIN, max = TEMP_MAX;
   let pct = (temp - min) / (max - min);
   if (pct < 0) pct = 0; if (pct > 1) pct = 1;
-  const deg = 180 + (180 * pct); // 180° a 360° para semicírculo
+  const deg = 180 + (180 * pct); // Semicírculo de 180° a 360°
   document.getElementById('needle').style.setProperty('--rot', deg + 'deg');
 }
 
@@ -405,5 +407,4 @@ if ('serviceWorker' in navigator){
 </script>
 </body>
 </html>
-
 
