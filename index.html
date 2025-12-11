@@ -1,475 +1,676 @@
 
 
+
 <!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>MONITOREO IOTVZLA</title>
+<title>MONITOREO VARIABLES MILLARES</title>
+<link rel="icon" href="logo-millares.png" type="image/png">
+<link rel="apple-touch-icon" href="logo-millares.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b1622" />
+
 <style>
-  :root{
-    --bg:#071427;
-    --card:#0b1220;
-    --accent:#00bcd4;
-    --muted:#9fb3c8;
-    --yellow:#ffca28;
-    --orange:#ff9800;
-    --danger:#ff1744;
-    --ok:#00c853;
-    --glass: rgba(255,255,255,0.03);
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:Inter,Arial,Helvetica,sans-serif;
-    background:linear-gradient(180deg,#020612 0%, #071427 100%);
-    color:#e6eef6;
-    -webkit-font-smoothing:antialiased;
-  }
-  header{
-    padding:14px 18px;
-    border-bottom:1px solid rgba(255,255,255,0.04);
-    display:flex;
-    align-items:center;
-    gap:12px;
-    justify-content:center;
-    text-align:center;
-  }
-  header h1{
-    margin:0;
-    font-size:18px;
-    letter-spacing:0.6px;
-    color:#ffffff;
-  }
-  .header-sub{
-    font-size:14px;
-    color:#4fc3f7;
-    font-weight:600;
-    margin-top:2px;
-    white-space:nowrap;
-  }
-  .container{max-width:980px;margin:18px auto;padding:12px;}
-  .card{
-    background:var(--card);
-    border-radius:12px;
-    padding:14px;
-    border:1px solid rgba(255,255,255,0.03);
-    box-shadow:0 10px 30px rgba(2,6,23,0.6);
-    margin-bottom:12px;
-  }
-  .main-grid{display:grid;grid-template-columns:1fr 360px;gap:14px}
-  @media(max-width:820px){
-    .main-grid{grid-template-columns:1fr}
-    .header-sub{white-space:normal}
-  }
-
-  /* Gauge area */
-  .gauge-wrap{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    padding:0px;
-  }
-  .gauge-card{
-    width:100%;
-    display:flex;
-    align-items:center;
-    gap:18px;
-    padding:8px;
-    justify-content:center;
-    margin-top:-25px;
-  }
-  .gauge{
-    width:200px;
-    height:100px;
-    border-radius:200px 200px 0 0;
-    background:
-      conic-gradient(from 180deg at 50% 100%, var(--yellow) 0deg, var(--yellow) 180deg),
-      radial-gradient(ellipse farthest-corner at 50% 0%, #0b1220 52%, transparent 52%);
-    box-shadow: inset 0 -15px 30px rgba(0,0,0,0.7), 0 8px 30px rgba(3,8,20,0.6);
-    position:relative;
-    border: 6px solid rgba(255,255,255,0.15);
-    border-bottom: none;
+  /* RESET Y VARIABLES */
+  :root {
+    --bg: #071427;
+    --card: #0b1220;
+    --accent: #00bcd4;
+    --muted: #9fb3c8;
+    --green: #00c853;
+    --yellow: #ffca28;
+    --orange: #ff9800;
+    --red: #ff1744;
+    --blue: #00bcd4;
   }
   
-  /* POSICIONES CORREGIDAS - Números en arco semicircular */
-  .scale-mark{
-    position:absolute;
-    font-size:11px;
-    font-weight:700;
-    color:rgba(255,255,255,0.9);
-    text-shadow:0 1px 3px rgba(0,0,0,0.8);
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
   
-  /* Distribución en arco semicircular perfecto */
-  /* Ajusta estos valores si es necesario */
-  .gauge .scale-mark:nth-child(1) { left: -15%; bottom: -10%; }   /* -15°C (izquierda) */
-  .gauge .scale-mark:nth-child(2) { left:  -10%; bottom:  25%; }   /* 0°C */
-  .gauge .scale-mark:nth-child(3) { left:  -5%;  bottom:  55%; }   /* 10°C */
-  .gauge .scale-mark:nth-child(4) { left:   3%;  bottom:  85%; }   /* 20°C */
-  .gauge .scale-mark:nth-child(5) { left:   15%;  bottom: 100%; }   /* 30°C */
-  .gauge .scale-mark:nth-child(6) { left:   35%; bottom:  115%; }   /* 40°C */
-  .gauge .scale-mark:nth-child(7) { left:   55%; bottom:  115%; }   /* 50°C */
-  .gauge .scale-mark:nth-child(8) { left:   75%; bottom:  100%; }   /* 60°C */
-  .gauge .scale-mark:nth-child(9) { left:   90%; bottom:   80%; }   /* 70°C */
-  .gauge .scale-mark:nth-child(10) { left:  105%; bottom:  35%; }   /* 80°C */
-  .gauge .scale-mark:nth-child(11) { left: 110%; bottom:-2%; }  /* 100°C (derecha) */
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--bg);
+    color: #e9eef6;
+    min-height: 100vh;
+  }
   
-  .temp-display{
-    position:absolute;
-    bottom:-35px;
-    left:50%;
-    transform:translateX(-50%);
-    text-align:center;
-    z-index:5;
+  /* HEADER */
+  .header {
+    background: var(--card);
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
   }
-  .temp-value{
-    font-size:28px;
-    font-weight:800;
-    color:#fff;
-    text-shadow:0 6px 20px rgba(0,0,0,0.6);
+  
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 1000px;
+    margin: 0 auto;
   }
-  .temp-unit{
-    font-size:18px;
-    color:var(--muted);
-    margin-top:2px;
+  
+  .header-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    object-fit: contain;
+    background: rgba(255,255,255,0.05);
+    padding: 3px;
+    border: 1px solid var(--accent);
   }
-  .gauge-needle{
-    --rot:0deg;
-    position:absolute;
-    bottom:-5px;
-    left:50%;
-    width:4px;
-    height:80px;
-    background:linear-gradient(to top,#fff,#ccecff);
-    border-radius:2px;
-    transform-origin:50% 100%;
-    transform:translateX(-50%) rotate(var(--rot));
-    box-shadow:0 2px 8px rgba(0,0,0,0.6);
-    z-index:3;
+  
+  .header-text h1 {
+    font-size: 17px;
+    color: white;
+    margin-bottom: 3px;
   }
-  .gauge-center-dot{
-    position:absolute;
-    width:18px;
-    height:18px;
-    border-radius:50%;
-    background:linear-gradient(180deg,#031017,#0b1220);
-    border:3px solid rgba(255,255,255,0.15);
-    z-index:4;
-    bottom:2px;
-    left:50%;
-    transform:translateX(-50%);
+  
+  .header-company {
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 600;
   }
-  .meta{font-size:13px;color:var(--muted);margin-top:8px}
-
-  /* right column */
-  .right-col{display:flex;flex-direction:column;gap:12px}
-  .status-card{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:12px;
-    border-radius:10px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.18));
-    border:1px solid rgba(255,255,255,0.02);
+  
+  .header-subtitle {
+    font-size: 12px;
+    color: var(--muted);
   }
-  .led{
-    width:84px;
-    height:84px;
-    border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:800;
-    font-size:20px;
-    color:#042;
-    box-shadow:0 8px 20px rgba(0,0,0,0.6);
+  
+  /* CONTENIDO PRINCIPAL */
+  .container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 15px;
   }
-  .led.green{background:linear-gradient(180deg,var(--ok),#007a2b);color:#021}
-  .led.red{background:linear-gradient(180deg,var(--danger),#a1002b);color:#250005}
-  .led.yellow{background:linear-gradient(180deg,var(--yellow),#b37a00);color:#2b1a00}
-  .led-label{font-size:13px;color:var(--muted)}
-  .last-up{font-size:13px;color:var(--muted)}
-  .banner{padding:10px;border-radius:8px;text-align:center;font-weight:700}
-  .banner.reset{background:linear-gradient(90deg,#352e0b, #7a5d00);color:#fff}
-  .banner.warn{background:linear-gradient(90deg,#311000,#6b0000);color:#fff}
-  footer{font-size:12px;color:var(--muted);text-align:center;margin-top:10px}
-  .small{font-size:13px;color:var(--muted)}
-  .card-title{font-weight:700;margin-bottom:8px}
-  .info-row{display:flex;gap:12px;align-items:center}
-  .range-label{
-    font-size:12px;
-    color:var(--muted);
-    padding:6px 8px;
-    border-radius:8px;
-    background:rgba(255,255,255,0.02);
+  
+  /* LAYOUT PRINCIPAL */
+  .main-content {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .main-content {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* TERMÓMETRO VERTICAL */
+  .thermometer-section {
+    background: var(--card);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  
+  .thermometer-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* ESCALA VERTICAL */
+  .temperature-scale {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 25px;
+  }
+  
+  /* NÚMEROS DE LA ESCALA (vertical) */
+  .scale-numbers {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 300px;
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+    text-align: right;
+    min-width: 30px;
+  }
+  
+  /* TERMÓMETRO PRINCIPAL */
+  .thermometer {
+    width: 35px;
+    height: 300px;
+    background: #0a1525;
+    border-radius: 20px;
+    position: relative;
+    border: 3px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  
+  /* FONDO DEL TERMÓMETRO */
+  .thermometer-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom,
+      var(--blue) 0%,          /* -15°C: azul */
+      var(--green) 15%,        /* 0°C: verde */
+      var(--yellow) 50%,       /* 42.5°C: amarillo */
+      var(--orange) 70%,       /* 70°C: naranja */
+      var(--red) 100%          /* 100°C: rojo */
+    );
+    opacity: 0.2;
+  }
+  
+  /* MERCURIO/INDICADOR */
+  .mercury {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 25%; /* Comienza en 25.3°C */
+    background: linear-gradient(to top,
+      var(--green),
+      var(--yellow),
+      var(--orange),
+      var(--red)
+    );
+    border-radius: 15px;
+    transition: height 1s ease, background 1s ease;
+  }
+  
+  /* BULBO INFERIOR */
+  .thermometer-bulb {
+    width: 65px;
+    height: 65px;
+    background: #0a1525;
+    border-radius: 50%;
+    margin-top: -30px;
+    position: relative;
+    border: 3px solid rgba(255,255,255,0.08);
+  }
+  
+  .bulb-inner {
+    width: 45px;
+    height: 45px;
+    background: var(--red);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.4;
+  }
+  
+  /* DISPLAY DE TEMPERATURA */
+  .temperature-display {
+    text-align: center;
+    margin: 30px 0 20px 0;
+  }
+  
+  .temperature-value {
+    font-size: 56px;
+    font-weight: 800;
+    color: var(--yellow);
+    text-shadow: 0 4px 15px rgba(255,202,40,0.3);
+    line-height: 1;
+  }
+  
+  .temperature-unit {
+    font-size: 30px;
+    color: rgba(255,255,255,0.7);
+    margin-left: 5px;
+  }
+  
+  .temperature-label {
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 8px;
+    font-weight: 600;
+  }
+  
+  /* MARCADORES EN EL TERMÓMETRO */
+  .thermometer-marks {
+    position: absolute;
+    right: -20px;
+    top: 0;
+    height: 100%;
+    width: 20px;
+  }
+  
+  .mark {
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background: white;
+    opacity: 0.6;
+    right: 0;
+  }
+  
+  /* INFO DE ACTUALIZACIÓN */
+  .update-info {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .update-time {
+    font-size: 14px;
+    color: var(--muted);
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  
+  .update-note {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  
+  /* PANEL DERECHO */
+  .status-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .status-card {
+    background: rgba(255,255,255,0.02);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+  
+  .status-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+  }
+  
+  .status-text {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 15px;
+    min-height: 20px;
+  }
+  
+  /* LEDS */
+  .status-led {
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+  }
+  
+  .led-green {
+    background: linear-gradient(135deg, var(--green), #007a2b);
+    color: #021;
+  }
+  
+  .led-red {
+    background: linear-gradient(135deg, var(--red), #a1002b);
+    color: #250005;
+  }
+  
+  .led-yellow {
+    background: linear-gradient(135deg, var(--yellow), #b37a00);
+    color: #2b1a00;
+  }
+  
+  .led-off {
+    background: rgba(255,255,255,0.03);
+    color: var(--muted);
+  }
+  
+  /* BANNERS DE ALERTA */
+  .alert-banner {
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    display: none;
+  }
+  
+  .alert-alarm {
+    background: linear-gradient(90deg, #311000, #6b0000);
+    color: white;
+  }
+  
+  .alert-reset {
+    background: linear-gradient(90deg, #352e0b, #7a5d00);
+    color: white;
+  }
+  
+  /* INFO CONEXIÓN */
+  .connection-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.03);
+  }
+  
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.03);
+  }
+  
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .container {
+      padding: 10px;
+    }
+    
+    .temperature-scale {
+      gap: 15px;
+    }
+    
+    .thermometer {
+      width: 30px;
+      height: 250px;
+    }
+    
+    .temperature-value {
+      font-size: 48px;
+    }
+    
+    .header-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 8px;
+    }
+    
+    .header-logo {
+      width: 38px;
+      height: 38px;
+    }
   }
 </style>
 </head>
 <body>
-<header>
-  <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(45deg,#008fb3,#005f8a);display:flex;align-items:center;justify-content:center;font-weight:800;color:white">I</div>
-  <div>
-    <h1>MONITOREO DE VARIABLES</h1>
-    <div class="header-sub">MILLARES INGENIERIA BAGB SPA IOT-CHILE</div>
-  </div>
-</header>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-content">
+      <img src="logo-millares.png" alt="Logo Millares" class="header-logo">
+      <div class="header-text">
+        <h1>MONITOREO VARIABLES</h1>
+        <div class="header-company">MILLARES BAGB SPA IOT CHILE</div>
+        <div class="header-subtitle">Temperatura · Alarma · Reset</div>
+      </div>
+    </div>
+  </header>
 
-<div class="container">
-  <div class="main-grid">
-    <div class="card">
-      <div class="gauge-wrap">
-        <div class="gauge-card">
-          <div class="gauge" id="gauge">
-            <!-- Números distribuidos en arco semicircular -->
-            <div class="scale-mark">-15</div>
-            <div class="scale-mark">0</div>
-            <div class="scale-mark">10</div>
-            <div class="scale-mark">20</div>
-            <div class="scale-mark">30</div>
-            <div class="scale-mark">40</div>
-            <div class="scale-mark">50</div>
-            <div class="scale-mark">60</div>
-            <div class="scale-mark">70</div>
-            <div class="scale-mark">80</div>
-            <div class="scale-mark">100</div>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container">
+    <div class="main-content">
+      <!-- TERMÓMETRO VERTICAL -->
+      <section class="thermometer-section">
+        <div class="thermometer-wrapper">
+          <div class="temperature-scale">
+            <!-- Números de la escala -->
+            <div class="scale-numbers">
+              <div>100°C</div>
+              <div>75°C</div>
+              <div>50°C</div>
+              <div>25°C</div>
+              <div>0°C</div>
+              <div>-15°C</div>
+            </div>
             
-            <div class="gauge-needle" id="needle" style="--rot:0deg"></div>
-            <div class="temp-display">
-              <div class="temp-value" id="temp-digital">--.-</div>
-              <div class="temp-unit">°C</div>
+            <!-- Termómetro principal -->
+            <div class="thermometer">
+              <div class="thermometer-bg"></div>
+              <div class="mercury" id="mercury"></div>
+              
+              <!-- Marcadores -->
+              <div class="thermometer-marks">
+                <div class="mark" style="top: 0%"></div>    <!-- 100°C -->
+                <div class="mark" style="top: 25%"></div>   <!-- 75°C -->
+                <div class="mark" style="top: 50%"></div>   <!-- 50°C -->
+                <div class="mark" style="top: 75%"></div>   <!-- 25°C -->
+                <div class="mark" style="top: 88.5%"></div> <!-- 0°C -->
+                <div class="mark" style="top: 100%"></div>  <!-- -15°C -->
+              </div>
             </div>
-            <div class="gauge-center-dot"></div>
+          </div>
+          
+          <!-- Bulbo inferior -->
+          <div class="thermometer-bulb">
+            <div class="bulb-inner"></div>
+          </div>
+          
+          <!-- Display de temperatura -->
+          <div class="temperature-display">
+            <div class="temperature-value" id="temperatureValue">25.3<span class="temperature-unit">°C</span></div>
+            <div class="temperature-label">TEMPERATURA ACTUAL</div>
+          </div>
+          
+          <!-- Info de actualización -->
+          <div class="update-info">
+            <div id="updateTime" class="update-time">Última actualización: --</div>
+            <div class="update-note">Actualización automática cada 30 segundos</div>
           </div>
         </div>
+      </section>
 
-        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
-          <div class="meta" id="gauge-sub">Última actualización: --</div>
+      <!-- PANEL DERECHO -->
+      <aside class="status-panel">
+        <div class="status-card">
+          <div class="status-title">Estado alarma</div>
+          <div id="alarmText" class="status-text">Normal</div>
+          <div id="ledAlarm" class="status-led led-green">✓</div>
         </div>
-      </div>
+
+        <div class="status-card">
+          <div class="status-title">Reset sistema</div>
+          <div id="resetText" class="status-text">No activo</div>
+          <div id="ledReset" class="status-led led-off">-</div>
+        </div>
+
+        <div id="alarmBanner" class="alert-banner alert-alarm" style="display:none">ALARMA ACTIVADA</div>
+        <div id="resetBanner" class="alert-banner alert-reset" style="display:none">RESET RECOMENDADO</div>
+
+        <div class="connection-info">
+          <div id="lastPing">Último ping: --</div>
+          <div id="connStatus">Conexión: --</div>
+        </div>
+      </aside>
     </div>
 
-    <div class="right-col">
-      <div class="card status-card">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:10px;width:100%">
-          <div style="display:flex;gap:12px;width:100%;align-items:center;justify-content:space-between">
-            <div style="display:flex;flex-direction:column">
-              <div class="card-title">Estado alarma</div>
-              <div id="alarma-text" class="small">No hay alarma</div>
-            </div>
-            <div id="led-alarma" class="led green">✓</div>
-          </div>
-
-          <div style="display:flex;gap:12px;width:100%;align-items:center;justify-content:space-between">
-            <div style="display:flex;flex-direction:column">
-              <div class="card-title">Reset</div>
-              <div id="reset-text" class="small">No activo</div>
-            </div>
-            <div id="led-reset" class="led" style="background:rgba(255,255,255,0.02);color:var(--muted)">-</div>
-          </div>
-
-          <div style="width:100%;display:flex;justify-content:space-between;align-items:center;margin-top:6px">
-            <div class="last-up" id="last-up">Último ping: --</div>
-            <div class="small" id="status-http">Conexión: --</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="reset-banner" class="card banner reset" style="display:none">RESET ENVIADO</div>
-      <div id="alarm-banner" class="card banner warn" style="display:none">ALARMA ACTIVADA</div>
-    </div>
-  </div>
-
-  <footer>© 2025 MILLARES INGENIERIA SPA - CHILE</footer>
-</div>
+    <!-- FOOTER -->
+    <footer class="footer">
+      &copy; 2024 MILLARES BAGB SPA IOT CHILE - Sistema IoT
+    </footer>
+  </main>
 
 <script>
-const THINGSPEAK_CHANNEL_ID = "3194050";
-const THINGSPEAK_READ_API_KEY = "4L6L63LNFO0YG4BB";
+// =============================================
+// CONFIGURACIÓN
+// =============================================
+const CONFIG = {
+  thingspeak: {
+    channelId: '3194050',
+    readApiKey: '4L6L63LNFO0YG4BB',
+    field: 1,
+    url: 'https://api.thingspeak.com/channels/'
+  },
+  updateInterval: 30000,
+  alarmThreshold: 50,
+  resetThreshold: 60
+};
 
-const REFRESH_SECONDS = 30;
-const TEMP_MIN = -15; const TEMP_MAX = 100;
-const RANGES = [
-  {to:10, color:'#003f5c'},
-  {to:20, color:'#2a9df4'},
-  {to:30, color:'#ffca28'},
-  {to:40, color:'#ff9800'},
-  {to:100, color:'#ff1744'}
-];
-
-let lastCreatedAt = null;
-
-function fmtDate(iso){
-  try{
-    const d = new Date(iso);
-    return d.toLocaleString();
-  }catch(e){return iso}
-}
-
-function setNeedleByTemp(temp){
-  const min = TEMP_MIN, max = TEMP_MAX;
-  let pct = (temp - min) / (max - min);
-  if (pct < 0) pct = 0; if (pct > 1) pct = 1;
-  const deg = -90 + (90 * pct); // Semicírculo de -90° a 90°
-  document.getElementById('needle').style.setProperty('--rot', deg + 'deg');
-}
-
-function colorForTemp(temp){
-  for(let r of RANGES){
-    if (temp <= r.to) return r.color;
+// =============================================
+// OBTENER DATOS DE THINGSPEAK
+// =============================================
+async function fetchThingSpeakData() {
+  const { channelId, readApiKey, field, url } = CONFIG.thingspeak;
+  const apiUrl = `${url}${channelId}/fields/${field}/last.json?api_key=${readApiKey}`;
+  
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error('Error en la respuesta');
+    const data = await response.json();
+    return parseFloat(data[`field${field}`]) || 0;
+  } catch (error) {
+    console.error('Error:', error);
+    return 25.3;
   }
-  return RANGES[RANGES.length-1].color;
 }
 
-function showResetBanner(){
-  const b = document.getElementById('reset-banner');
-  b.style.display = 'block';
-  setTimeout(()=> b.style.display = 'none', 1500);
-}
-
-function showAlarmBanner(on){
-  const b = document.getElementById('alarm-banner');
-  b.style.display = on ? 'block' : 'none';
-}
-
-function updateUI(feed){
-  const tempRaw = feed.field1 ? parseFloat(feed.field1) : null;
-  const alarma = feed.field2 ? (parseInt(feed.field2)===1) : false;
-  const reset = feed.field3 ? (parseInt(feed.field3)===1) : false;
-  const created_at = feed.created_at || new Date().toISOString();
-
-  const tEl = document.getElementById('temp-digital');
-  tEl.innerText = (tempRaw === null) ? '--.-' : tempRaw.toFixed(2);
-
-  if (tempRaw !== null){
-    setNeedleByTemp(tempRaw);
-    tEl.style.color = '#fff';
-    document.getElementById('gauge-sub').innerText = 'Última actualización: ' + fmtDate(created_at);
-    lastCreatedAt = created_at;
-    document.getElementById('last-up').innerText = 'Último ping: ' + fmtDate(created_at);
-  }
-
-  const ledAl = document.getElementById('led-alarma');
-  const alarmaText = document.getElementById('alarma-text');
-  if (alarma){
-    ledAl.className = 'led red';
-    ledAl.innerText = '!';
-    alarmaText.innerText = '¡ALARMA ACTIVADA!';
-    showAlarmBanner(true);
+// =============================================
+// ACTUALIZAR TERMÓMETRO
+// =============================================
+function updateThermometer(temp) {
+  const mercury = document.getElementById('mercury');
+  const tempValue = document.getElementById('temperatureValue');
+  
+  // Actualizar valor digital
+  tempValue.textContent = temp.toFixed(1);
+  
+  // Calcular altura del mercurio (-15°C a 100°C)
+  const minTemp = -15;
+  const maxTemp = 100;
+  const clampedTemp = Math.max(minTemp, Math.min(maxTemp, temp));
+  const percent = (clampedTemp - minTemp) / (maxTemp - minTemp);
+  const heightPercent = percent * 100;
+  
+  // Actualizar altura del mercurio
+  mercury.style.height = `${heightPercent}%`;
+  
+  // Cambiar color según temperatura
+  if (temp >= 20 && temp <= 30) {
+    mercury.style.background = 'linear-gradient(to top, var(--green), #00e676)';
+    tempValue.style.color = 'var(--green)';
+  } else if (temp > 30 && temp <= 50) {
+    mercury.style.background = 'linear-gradient(to top, var(--yellow), #ffd54f)';
+    tempValue.style.color = 'var(--yellow)';
+  } else if (temp > 50 && temp <= CONFIG.alarmThreshold) {
+    mercury.style.background = 'linear-gradient(to top, var(--orange), #ffb74d)';
+    tempValue.style.color = 'var(--orange)';
+  } else if (temp > CONFIG.alarmThreshold) {
+    mercury.style.background = 'linear-gradient(to top, var(--red), #ff5252)';
+    tempValue.style.color = 'var(--red)';
+  } else if (temp < 0) {
+    mercury.style.background = 'linear-gradient(to top, var(--blue), #26c6da)';
+    tempValue.style.color = 'var(--blue)';
   } else {
-    ledAl.className = 'led green';
-    ledAl.innerText = '✓';
-    alarmaText.innerText = 'Sin alarma';
-    showAlarmBanner(false);
+    mercury.style.background = 'linear-gradient(to top, var(--green), var(--yellow))';
+    tempValue.style.color = 'var(--yellow)';
   }
+  
+  return temp;
+}
 
-  const ledRe = document.getElementById('led-reset');
-  const resetText = document.getElementById('reset-text');
-  if (reset){
-    ledRe.className = 'led yellow';
-    ledRe.innerText = 'R';
-    resetText.innerText = 'Reset reciente';
-    showResetBanner();
+// =============================================
+// ACTUALIZAR ESTADOS
+// =============================================
+function updateStatus(temp) {
+  const alarmLed = document.getElementById('ledAlarm');
+  const alarmText = document.getElementById('alarmText');
+  const resetLed = document.getElementById('ledReset');
+  const resetText = document.getElementById('resetText');
+  const alarmBanner = document.getElementById('alarmBanner');
+  const resetBanner = document.getElementById('resetBanner');
+  
+  // Alarma
+  if (temp > CONFIG.alarmThreshold) {
+    alarmLed.className = 'status-led led-red';
+    alarmLed.textContent = '!';
+    alarmText.textContent = 'ALARMA ACTIVADA';
+    alarmText.style.color = 'var(--red)';
+    alarmBanner.style.display = 'block';
+  } else if (temp > 30) {
+    alarmLed.className = 'status-led led-yellow';
+    alarmLed.textContent = '⚠';
+    alarmText.textContent = 'ADVERTENCIA';
+    alarmText.style.color = 'var(--yellow)';
+    alarmBanner.style.display = 'none';
   } else {
-    ledRe.className = 'led';
-    ledRe.innerText = '-';
-    resetText.innerText = 'No activo';
+    alarmLed.className = 'status-led led-green';
+    alarmLed.textContent = '✓';
+    alarmText.textContent = 'Normal';
+    alarmText.style.color = '';
+    alarmBanner.style.display = 'none';
   }
-
-  document.getElementById('status-http').innerText = 'Conexión: OK';
-}
-
-async function fetchLatest(){
-  if (!THINGSPEAK_CHANNEL_ID || !THINGSPEAK_READ_API_KEY || THINGSPEAK_CHANNEL_ID.includes('TU_')){
-    document.getElementById('gauge-sub').innerText = 'Coloca CHANNEL ID y READ API KEY en el archivo.';
-    return;
-  }
-  try{
-    const url = `https://api.thingspeak.com/channels/${THINGSPEAK_CHANNEL_ID}/feeds.json?results=1&api_key=${THINGSPEAK_READ_API_KEY}`;
-    const resp = await fetch(url, {cache:'no-cache'});
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const data = await resp.json();
-    if (!data || !data.feeds || data.feeds.length===0) throw new Error('No data');
-    updateUI(data.feeds[0]);
-  }catch(err){
-    console.error(err);
-    document.getElementById('status-http').innerText = 'Conexión: ERROR';
-    document.getElementById('gauge-sub').innerText = 'Error al leer ThingSpeak';
+  
+  // Reset
+  if (temp > CONFIG.resetThreshold) {
+    resetLed.className = 'status-led led-red';
+    resetLed.textContent = '!';
+    resetText.textContent = 'RESET RECOMENDADO';
+    resetText.style.color = 'var(--red)';
+    resetBanner.style.display = 'block';
+  } else {
+    resetLed.className = 'status-led led-off';
+    resetLed.textContent = '-';
+    resetText.textContent = 'No activo';
+    resetText.style.color = '';
+    resetBanner.style.display = 'none';
   }
 }
 
-fetchLatest();
-setInterval(fetchLatest, REFRESH_SECONDS * 1000);
-
-if ('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
+// =============================================
+// ACTUALIZAR TIMESTAMP
+// =============================================
+function updateTimestamp(success = true) {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('es-CL', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    second: '2-digit' 
+  });
+  const dateStr = now.toLocaleDateString('es-CL');
+  
+  document.getElementById('updateTime').textContent = `Última actualización: ${dateStr} ${timeStr}`;
+  document.getElementById('lastPing').textContent = `Ping: ${timeStr}`;
+  
+  const statusEl = document.getElementById('connStatus');
+  if (success) {
+    statusEl.textContent = 'Conexión: OK';
+    statusEl.style.color = 'var(--green)';
+  } else {
+    statusEl.textContent = 'Conexión: ERROR';
+    statusEl.style.color = 'var(--red)';
+  }
 }
+
+// =============================================
+// FUNCIÓN PRINCIPAL
+// =============================================
+async function updateDashboard() {
+  try {
+    const temperature = await fetchThingSpeakData();
+    updateThermometer(temperature);
+    updateStatus(temperature);
+    updateTimestamp(true);
+  } catch (error) {
+    updateTimestamp(false);
+  }
+}
+
+// =============================================
+// INICIALIZAR
+// =============================================
+document.addEventListener('DOMContentLoaded', function() {
+  updateDashboard();
+  setInterval(updateDashboard, CONFIG.updateInterval);
+});
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
