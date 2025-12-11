@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -60,11 +61,14 @@
   .container{max-width:1000px;margin:20px auto;padding:10px;}
   .main-grid{
     display:grid;
-    grid-template-columns:1fr 260px 260px;
+    grid-template-columns:260px 1fr 260px; /* CAMBIADO: Alarma | Termómetro | Reset */
     gap:20px;
   }
   @media(max-width:850px){
-    .main-grid{grid-template-columns:1fr}
+    .main-grid{
+      grid-template-columns:1fr;
+      grid-template-rows:auto auto auto;
+    }
   }
 
   /* TERMOMETRO HORIZONTAL */
@@ -125,13 +129,17 @@
     text-shadow:0 5px 20px rgba(255,255,0,0.3);
   }
 
-  /* CARDS PEQUEÑOS */
+  /* CARDS PEQUEÑOS (ALARMA Y RESET) */
   .side-card{
     background:rgba(255,255,255,0.03);
     border-radius:12px;
     padding:18px;
     text-align:center;
     border:1px solid rgba(255,255,255,0.05);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    height:100%;
   }
   .side-title{font-size:15px;font-weight:700;margin-bottom:10px}
   .side-text{font-size:13px;color:var(--muted);margin-bottom:12px}
@@ -179,7 +187,14 @@
 <div class="container">
   <div class="main-grid">
 
-    <!-- TERMOMETRO HORIZONTAL -->
+    <!-- ALARMA A LA IZQUIERDA -->
+    <div class="side-card">
+      <div class="side-title">Estado alarma</div>
+      <div id="alarmText" class="side-text">Normal</div>
+      <div id="ledAlarm" class="led led-green">✓</div>
+    </div>
+
+    <!-- TERMOMETRO HORIZONTAL (EN EL CENTRO) -->
     <div class="thermo-card">
       <div class="thermo-wrap">
 
@@ -199,13 +214,6 @@
         </div>
 
       </div>
-    </div>
-
-    <!-- ALARMA A LA IZQUIERDA -->
-    <div class="side-card">
-      <div class="side-title">Estado alarma</div>
-      <div id="alarmText" class="side-text">Normal</div>
-      <div id="ledAlarm" class="led led-green">✓</div>
     </div>
 
     <!-- RESET A LA DERECHA -->
@@ -252,7 +260,7 @@ function updateStatus(t){
   const alarmLed=document.getElementById("ledAlarm");
   const alarmText=document.getElementById("alarmText");
   const resetLed=document.getElementById("ledReset");
-  const resetText=document.getElementById("resetText"); final to=container.execption.Message truncated;"><?><??>
+  const resetText=document.getElementById("resetText");
 
   if(t>CONFIG.alarm){
     alarmLed.className="led led-red";
@@ -291,4 +299,3 @@ setInterval(loop,30000);
 
 </body>
 </html>
-
