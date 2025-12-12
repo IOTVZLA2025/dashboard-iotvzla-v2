@@ -1,7 +1,6 @@
 
 
 
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -23,7 +22,7 @@
     --orange:#ff9800;
     --red:#ff1744;
     --blue:#29b6f6;
-    --frame:#0d1a2e; /* Color para el recuadro profesional */
+    --frame:#0d1a2e;
   }
 
   body{
@@ -34,14 +33,13 @@
     min-height:100vh;
     display:flex;
     flex-direction:column;
-    padding:15px; /* Espacio alrededor del recuadro */
+    padding:15px;
   }
 
-  /* RECUADRO PROFESIONAL QUE CONTIENE TODA LA PÁGINA */
   .page-frame {
     background: var(--frame);
     border-radius: 20px;
-    border: 2px solid rgba(0, 188, 212, 0.3); /* Borde azul sutil */
+    border: 2px solid rgba(0, 188, 212, 0.3);
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6),
                 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
     max-width: 1000px;
@@ -53,7 +51,6 @@
     flex-direction: column;
   }
 
-  /* HEADER */
   .header{
     padding:15px 20px;
     background:linear-gradient(135deg, #0b1220, #071a33);
@@ -89,7 +86,6 @@
     color:var(--muted);
   }
 
-  /* CONTENIDO PRINCIPAL */
   .container{
     flex:1;
     padding:20px;
@@ -97,7 +93,6 @@
     flex-direction:column;
   }
 
-  /* TERMOMETRO HORIZONTAL */
   .thermo-card{
     background:var(--card);
     padding:25px 30px;
@@ -116,7 +111,6 @@
     gap:20px;
   }
 
-  /* TUBO DEL TERMOMETRO */
   .thermo-bar{
     position:relative;
     width:100%;
@@ -129,7 +123,6 @@
     box-shadow:0 5px 15px rgba(0,0,0,0.3);
   }
 
-  /* MERCURIO */
   .thermo-mercury{
     position:absolute;
     left:0;
@@ -141,7 +134,6 @@
     box-shadow:inset 0 0 10px rgba(255,255,255,0.1);
   }
 
-  /* NUMEROS SIN "°C" */
   .thermo-scale{
     width:100%;
     display:flex;
@@ -152,42 +144,48 @@
     margin-top:5px;
   }
 
-  /* TEMPERATURA DIGITAL - GRANDE */
   .temp-digital{
     font-size:58px;
     font-weight:800;
     color:var(--yellow);
     text-shadow:0 5px 20px rgba(255,255,0,0.3);
-    margin:10px 0 20px 0;
+    margin:10px 0 5px 0;
     text-align:center;
   }
 
-  /* CONTENEDOR PARA LOS BOMBILLOS/LEDS */
+  /* NUEVO: FECHA Y HORA DE ACTUALIZACIÓN */
+  .update-time {
+    font-size: 14px; /* MISMO TAMAÑO QUE EL FOOTER */
+    color: white; /* COLOR BLANCO */
+    text-align: center;
+    margin: 0 0 20px 0;
+    font-weight: 700;
+    opacity: 0.9;
+  }
+
   .leds-container{
     display:flex;
     justify-content:center;
-    gap:50px; /* Más espacio para LEDs grandes */
+    gap:50px;
     width:100%;
     margin-top:15px;
   }
 
-  /* BOMBILLOS/LEDS CIRCULARES - ¡EL DOBLE DE GRANDES! */
   .led-bulb{
     display:flex;
     flex-direction:column;
     align-items:center;
-    width:140px; /* Más ancho para LEDs grandes */
+    width:140px;
   }
 
-  /* LEDS DUPLICADOS EN TAMAÑO: DE 50px A 100px */
   .bulb-circle{
-    width:100px; /* DUPLICADO: 50px → 100px */
-    height:100px; /* DUPLICADO: 50px → 100px */
+    width:100px;
+    height:100px;
     border-radius:50%;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:32px; /* Más grande para el icono */
+    font-size:32px;
     font-weight:800;
     margin-bottom:12px;
     box-shadow:0 8px 25px rgba(0,0,0,0.7),
@@ -211,7 +209,6 @@
     font-weight:600;
   }
 
-  /* COLORES DE LOS BOMBILLOS - MÁS VIBRANTES */
   .bulb-green{
     background:radial-gradient(circle at 30% 30%, var(--green), #007a2b, #005a1f);
     color:#fff;
@@ -235,7 +232,6 @@
     color:var(--muted);
   }
 
-  /* FOOTER COPYRIGHT */
   .footer-copy{
     text-align:center;
     font-size:14px;
@@ -247,7 +243,6 @@
     background:rgba(0,0,0,0.2);
   }
 
-  /* RESPONSIVE PARA CELULAR */
   @media (max-width: 768px) {
     body {
       padding: 10px;
@@ -269,6 +264,10 @@
       font-size: 48px;
     }
     
+    .update-time {
+      font-size: 13px;
+    }
+    
     .thermo-bar {
       height: 35px;
     }
@@ -277,7 +276,6 @@
       font-size: 11px;
     }
     
-    /* LEDs grandes en móvil - ajustados */
     .leds-container {
       gap: 30px;
     }
@@ -287,7 +285,7 @@
     }
     
     .bulb-circle {
-      width: 80px; /* Aún grande pero ajustado para móvil */
+      width: 80px;
       height: 80px;
       font-size: 28px;
     }
@@ -301,10 +299,13 @@
     }
   }
 
-  /* PARA PANTALLAS MUY PEQUEÑAS */
   @media (max-width: 480px) {
     .temp-digital {
       font-size: 42px;
+    }
+    
+    .update-time {
+      font-size: 12px;
     }
     
     .thermo-bar {
@@ -317,7 +318,7 @@
     
     .leds-container {
       gap: 20px;
-      flex-direction: row; /* Siempre en fila */
+      flex-direction: row;
     }
     
     .led-bulb {
@@ -336,7 +337,6 @@
 
 <body>
 
-<!-- RECUADRO PROFESIONAL QUE CONTIENE TODA LA PÁGINA -->
 <div class="page-frame">
 
   <header class="header">
@@ -352,36 +352,34 @@
 
   <div class="container">
 
-    <!-- TERMOMETRO HORIZONTAL COMPLETO -->
     <div class="thermo-card">
       <div class="thermo-wrap">
 
-        <!-- Barra del termómetro -->
         <div class="thermo-bar">
           <div id="mercury" class="thermo-mercury"></div>
         </div>
 
-        <!-- Numeración (sin °C) -->
         <div class="thermo-scale">
           <span>-15</span><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span><span>50</span><span>60</span><span>70</span><span>80</span><span>90</span><span>100</span>
         </div>
 
-        <!-- Display de temperatura (4 dígitos) -->
         <div class="temp-digital">
           <span id="tempValue">0.0</span>°C
         </div>
 
-        <!-- CONTENEDOR PARA LOS DOS BOMBILLOS/LEDS GRANDES -->
+        <!-- NUEVO: FECHA Y HORA DE ACTUALIZACIÓN -->
+        <div id="updateTime" class="update-time">
+          Última actualización: --/--/---- --:--:-- --
+        </div>
+
         <div class="leds-container">
           
-          <!-- ALARMA - BOMBILLO IZQUIERDO (GRANDE) -->
           <div class="led-bulb">
             <div id="bulbAlarm" class="bulb-circle bulb-green">✓</div>
             <div class="bulb-label">ALARMA</div>
             <div id="alarmText" class="bulb-status">Normal</div>
           </div>
 
-          <!-- RESET - BOMBILLO DERECHO (GRANDE) -->
           <div class="led-bulb">
             <div id="bulbReset" class="bulb-circle bulb-off">-</div>
             <div class="bulb-label">RESET</div>
@@ -393,7 +391,6 @@
       </div>
     </div>
 
-    <!-- COPYRIGHT ABAJO -->
     <div class="footer-copy">
       &copy; MILLARES INGENIERIA SPA CHILE
     </div>
@@ -410,13 +407,49 @@ const CONFIG = {
   reset: 60
 };
 
+// Variable para guardar la última hora de actualización
+let lastUpdateTime = "";
+
+// Función para formatear fecha y hora
+function formatDateTime() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12; // La hora 0 se convierte en 12
+  
+  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+}
+
+// Función para actualizar el tiempo de actualización
+function updateTimeDisplay() {
+  lastUpdateTime = formatDateTime();
+  document.getElementById("updateTime").textContent = 
+    `Última actualización: ${lastUpdateTime}`;
+}
+
 async function getTemp(){
   try{
     const url=`https://api.thingspeak.com/channels/${CONFIG.channelId}/fields/1/last.json?api_key=${CONFIG.apiKey}`;
     const r=await fetch(url);
     const j=await r.json();
+    
+    // Si se obtiene un dato nuevo, actualizar la hora
+    if (j.field1) {
+      updateTimeDisplay();
+    }
+    
     return parseFloat(j.field1);
-  }catch(e){return 0}
+  }catch(e){
+    return 0;
+  }
 }
 
 function updateThermo(t){
@@ -463,10 +496,12 @@ async function loop(){
   updateStatus(t);
 }
 
+// Inicializar con hora actual al cargar la página
+updateTimeDisplay();
+
 loop();
 setInterval(loop,30000);
 </script>
 
 </body>
 </html>
-
