@@ -62,18 +62,18 @@
     margin:0 auto;
   }
   
-  /* LOGO MEJORADO PARA 255×164px - SE AJUSTA A 45×45px SIN DEFORMAR */
+  /* LOGO MEJORADO PARA 255×164px */
   .header-logo{
     width:45px;
     height:45px;
     border-radius:10px;
     background:rgba(255,255,255,0.05);
-    padding:3px; /* Reducido para mejor ajuste */
+    padding:3px;
     border:1px solid var(--accent);
     display:flex;
     align-items:center;
     justify-content:center;
-    overflow:hidden; /* Oculta lo que sobresalga */
+    overflow:hidden;
   }
   
   .header-logo img{
@@ -81,9 +81,9 @@
     max-height:100%;
     width:auto;
     height:auto;
-    object-fit:contain; /* Mantiene proporción sin recortar */
+    object-fit:contain;
   }
-  
+
   .header-text h1{
     font-size:17px;
     margin:0;
@@ -99,7 +99,250 @@
     color:var(--muted);
   }
 
-  /* ... (el resto del CSS permanece igual) ... */
+  .container{
+    flex:1;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .thermo-card{
+    background:var(--card);
+    padding:25px 30px;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,0.05);
+    box-shadow:0 10px 30px rgba(0,0,0,0.4),
+               inset 0 1px 0 rgba(255,255,255,0.03);
+    margin-top:5px;
+  }
+
+  .thermo-wrap{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+  }
+
+  .thermo-bar{
+    position:relative;
+    width:100%;
+    height:40px;
+    background:#0a1525;
+    border-radius:20px;
+    border:3px solid var(--yellow);
+    overflow:hidden;
+    margin-top:5px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+  }
+
+  .thermo-mercury{
+    position:absolute;
+    left:0;
+    top:0;
+    height:100%;
+    width:20%;
+    background:linear-gradient(90deg,var(--green),var(--yellow),var(--orange),var(--red));
+    transition: width 1s ease;
+    box-shadow:inset 0 0 10px rgba(255,255,255,0.1);
+  }
+
+  .thermo-scale{
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    font-weight:600;
+    color:white;
+    margin-top:5px;
+  }
+
+  .temp-digital{
+    font-size:58px;
+    font-weight:800;
+    color:var(--yellow);
+    text-shadow:0 5px 20px rgba(255,255,0,0.3);
+    margin:10px 0 5px 0;
+    text-align:center;
+  }
+
+  .update-time {
+    font-size: 14px;
+    color: white;
+    text-align: center;
+    margin: 0 0 20px 0;
+    font-weight: 700;
+    opacity: 0.9;
+  }
+
+  .leds-container{
+    display:flex;
+    justify-content:center;
+    gap:50px;
+    width:100%;
+    margin-top:15px;
+  }
+
+  .led-bulb{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:140px;
+  }
+
+  .bulb-circle{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    font-weight:800;
+    margin-bottom:12px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.7),
+               0 0 20px rgba(255,255,255,0.1) inset;
+    border:3px solid rgba(255,255,255,0.15);
+    transition: all 0.3s ease;
+  }
+
+  .bulb-label{
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:5px;
+    color:white;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+
+  .bulb-status{
+    font-size:13px;
+    color:var(--muted);
+    font-weight:600;
+  }
+
+  .bulb-green{
+    background:radial-gradient(circle at 30% 30%, var(--green), #007a2b, #005a1f);
+    color:#fff;
+    text-shadow:0 2px 4px rgba(0,0,0,0.5);
+  }
+
+  .bulb-yellow{
+    background:radial-gradient(circle at 30% 30%, var(--yellow), #b37a00, #8a5e00);
+    color:#fff;
+    text-shadow:0 2px 4px rgba(0,0,0,0.5);
+  }
+
+  .bulb-red{
+    background:radial-gradient(circle at 30% 30%, var(--red), #a1002b, #7a0021);
+    color:#fff;
+    text-shadow:0 2px 4px rgba(0,0,0,0.5);
+  }
+
+  .bulb-off{
+    background:radial-gradient(circle at 30% 30%, #444, #222, #111);
+    color:var(--muted);
+  }
+
+  .footer-copy{
+    text-align:center;
+    font-size:14px;
+    color:var(--blue);
+    margin-top:25px;
+    padding:20px 0;
+    font-weight:700;
+    border-top:1px solid rgba(255,255,255,0.08);
+    background:rgba(0,0,0,0.2);
+  }
+
+  @media (max-width: 768px) {
+    body {
+      padding: 10px;
+    }
+    
+    .page-frame {
+      border-radius: 15px;
+    }
+    
+    .container {
+      padding: 15px;
+    }
+    
+    .thermo-card {
+      padding: 20px;
+    }
+    
+    .temp-digital {
+      font-size: 48px;
+    }
+    
+    .update-time {
+      font-size: 13px;
+    }
+    
+    .thermo-bar {
+      height: 35px;
+    }
+    
+    .thermo-scale {
+      font-size: 11px;
+    }
+    
+    .leds-container {
+      gap: 30px;
+    }
+    
+    .led-bulb {
+      width: 120px;
+    }
+    
+    .bulb-circle {
+      width: 80px;
+      height: 80px;
+      font-size: 28px;
+    }
+    
+    .bulb-label {
+      font-size: 13px;
+    }
+    
+    .bulb-status {
+      font-size: 11px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .temp-digital {
+      font-size: 42px;
+    }
+    
+    .update-time {
+      font-size: 12px;
+    }
+    
+    .thermo-bar {
+      height: 30px;
+    }
+    
+    .thermo-scale {
+      font-size: 10px;
+    }
+    
+    .leds-container {
+      gap: 20px;
+      flex-direction: row;
+    }
+    
+    .led-bulb {
+      width: 100px;
+    }
+    
+    .bulb-circle {
+      width: 70px;
+      height: 70px;
+      font-size: 24px;
+    }
+  }
 
 </style>
 </head>
@@ -110,7 +353,7 @@
 
   <header class="header">
     <div class="header-content">
-      <!-- LOGO MODIFICADO - CON CONTENEDOR PARA MEJOR AJUSTE -->
+      <!-- LOGO MODIFICADO -->
       <div class="header-logo">
         <img src="logo-millares.png" alt="Logo Millares">
       </div>
@@ -204,7 +447,7 @@ function formatDateTime(date) {
   if (!date) return "Hora no disponible";
   
   const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getDate() + 1).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
   
   let hours = date.getHours();
@@ -344,5 +587,3 @@ setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 
 </body>
 </html>
-
-
