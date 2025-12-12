@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -122,33 +123,40 @@
   /* CONTENEDOR PARA LOS DOS CUADROS DEBAJO DE LA TEMPERATURA */
   .status-container{
     display:flex;
-    gap:20px;
+    gap:15px;
     width:100%;
     margin-top:10px;
-  }
-  @media(max-width:768px){
-    .status-container{flex-direction:column;}
+    justify-content:center;
   }
 
-  /* CARDS PEQUEÑOS DEBAJO DE LA TEMPERATURA */
+  /* CARDS PEQUEÑOS DEBAJO DE LA TEMPERATURA - MÁS PEQUEÑOS */
   .status-card{
-    flex:1;
+    width:180px; /* Más pequeño */
     background:rgba(255,255,255,0.03);
-    border-radius:12px;
-    padding:18px;
+    border-radius:10px;
+    padding:15px; /* Menos padding */
     text-align:center;
     border:1px solid rgba(255,255,255,0.05);
   }
-  .status-title{font-size:15px;font-weight:700;margin-bottom:10px}
-  .status-text{font-size:13px;color:var(--muted);margin-bottom:12px}
+  .status-title{
+    font-size:14px; /* Más pequeño */
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .status-text{
+    font-size:12px; /* Más pequeño */
+    color:var(--muted);
+    margin-bottom:10px;
+    min-height:18px;
+  }
   .led{
-    width:65px;
-    height:65px;
-    border-radius:14px;
+    width:50px; /* Más pequeño */
+    height:50px; /* Más pequeño */
+    border-radius:10px; /* Más pequeño */
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:24px;
+    font-size:20px; /* Más pequeño */
     font-weight:800;
     margin:0 auto;
   }
@@ -164,6 +172,73 @@
     color:var(--blue);
     margin-top:25px;
     font-weight:700;
+  }
+
+  /* RESPONSIVE PARA CELULAR */
+  @media (max-width: 768px) {
+    .container {
+      padding: 8px;
+    }
+    
+    .thermo-card {
+      padding: 20px;
+    }
+    
+    .temp-digital {
+      font-size: 48px;
+    }
+    
+    .status-container {
+      flex-direction: row; /* Siempre en fila */
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    
+    .status-card {
+      width: 48%; /* Ocupa casi la mitad */
+      min-width: 140px;
+      padding: 12px;
+    }
+    
+    .thermo-scale {
+      font-size: 12px;
+    }
+    
+    .thermo-bar {
+      height: 35px;
+    }
+  }
+  
+  /* Para pantallas muy pequeñas */
+  @media (max-width: 480px) {
+    .temp-digital {
+      font-size: 40px;
+    }
+    
+    .status-card {
+      width: 48%;
+      padding: 10px;
+    }
+    
+    .status-title {
+      font-size: 13px;
+    }
+    
+    .led {
+      width: 45px;
+      height: 45px;
+      font-size: 18px;
+    }
+    
+    .thermo-scale {
+      font-size: 10px;
+    }
+    
+    .thermo-bar {
+      height: 30px;
+      border-width: 3px;
+    }
   }
 
 </style>
