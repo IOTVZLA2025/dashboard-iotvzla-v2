@@ -62,27 +62,27 @@
     margin:0 auto;
   }
   
-  /* LOGO MEJORADO PARA 255×164px */
-  .header-logo{
-    width:45px;
-    height:45px;
-    border-radius:10px;
-    background:rgba(255,255,255,0.05);
-    padding:3px;
-    border:1px solid var(--accent);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-  }
-  
-  .header-logo img{
-    max-width:100%;
-    max-height:100%;
-    width:auto;
-    height:auto;
-    object-fit:contain;
-  }
+  /* LOGO OPTIMIZADO PARA 255×164px - SE VE COMPLETO */
+.header-logo{
+  width:80px;  /* Más ancho para logo horizontal */
+  height:45px; /* Mantiene altura */
+  border-radius:10px;
+  background:rgba(255,255,255,0.05);
+  padding:2px;
+  border:1px solid var(--accent);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.header-logo img{
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+}
 
   .header-text h1{
     font-size:17px;
@@ -587,3 +587,4 @@ setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 
 </body>
 </html>
+
