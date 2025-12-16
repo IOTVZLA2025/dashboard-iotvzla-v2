@@ -512,8 +512,8 @@ function processAlarmReset(alarmState, resetState, entryId) {
   const resetBulb = document.getElementById("bulbReset");
   const resetText = document.getElementById("resetText");
   
-  // RESET TIENE PRIORIDAD TOTAL
-  if (resetState === 1) {
+  // RESET TIENE PRIORIDAD TOTAL - Solo activar si no está ya activo
+  if (resetState === 1 && !resetActive) {
     // 1. Activar reset (AZUL)
     resetBulb.className = "bulb-circle bulb-blue";
     resetBulb.textContent = "!";
@@ -561,8 +561,8 @@ async function checkForUpdates() {
   try {
     const data = await getThingSpeakData();
     
-    // Verificar si la temperatura es válida (no 0 y dentro de rango)
-    const tempValida = data.temperature > -100 && data.temperature < 150;
+    // Verificar si la temperatura es válida (excluye 0°C si no es válido en tu ambiente)
+    const tempValida = data.temperature !== 0 && data.temperature >= -15 && data.temperature <= 100;
     
     if (tempValida) {
       lastValidTemp = data.temperature;
@@ -600,8 +600,8 @@ window.addEventListener('load', function() {
   checkForUpdates();
 });
 
-// Configurar intervalo de consulta (10 segundos para respuesta rápida)
-const CONSULTA_INTERVAL_MS = 10000;
+// Configurar intervalo de consulta (15 segundos para ahorrar ThingSpeak)
+const CONSULTA_INTERVAL_MS = 15000;
 setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 </script>
 
