@@ -1,7 +1,4 @@
 
-
-
-
 <!doctype html>
 <html lang="es">
 <head>
@@ -423,29 +420,16 @@ let resetActive = false;
 let resetTimeout = null;
 let lastValidTemp = 0;
 
-// Función para convertir hora UTC a Caracas (UTC-4) - CORREGIDA
+// Función para convertir hora UTC a Caracas (UTC-4) - REPARADA
 function convertToCaracasTime(thingSpeakTime) {
   if (!thingSpeakTime) return null;
   try {
-    // Parsear manualmente el string de ThingSpeak
-    // Formato: "2025-12-16T13:20:30Z"
-    const parts = thingSpeakTime.split(/[TZ\-:]/);
-    if (parts.length < 6) return null;
+    // Crear fecha en UTC (ThingSpeak devuelve UTC)
+    const utcDate = new Date(thingSpeakTime);
     
-    const year = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1; // Mes en JS es 0-11
-    const day = parseInt(parts[2]);
-    const hour = parseInt(parts[3]);
-    const minute = parseInt(parts[4]);
-    const second = parseInt(parts[5]);
-    
-    // Crear fecha en UTC
-    const utcDate = new Date(Date.UTC(year, month, day, hour, minute, second));
-    
-    // Ajustar a Caracas (UTC-4) restando 4 horas
-    const caracasDate = new Date(utcDate.getTime() - (4 * 60 * 60000));
-    
-    return caracasDate;
+    // Caracas es UTC-4, pero el navegador ya ajusta automáticamente
+    // Si el navegador está en zona Caracas, mostrará hora correcta
+    return utcDate;
   } catch (e) {
     console.error("Error convirtiendo hora:", e);
     return null;
