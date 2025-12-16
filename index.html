@@ -46,7 +46,7 @@ margin: 0 auto;
 overflow: hidden;
 flex: 1;
 display: flex;
-flex-direction: column;
+flex-direction:column;
 }
 
 .header{
@@ -62,10 +62,9 @@ max-width:900px;
 margin:0 auto;
 }
 
-/* LOGO PERFECTO 47×30px */
 .header-logo{
-width:47px; /* ANCHO EXACTO de tu nuevo logo */
-height:30px; /* ALTO EXACTO de tu nuevo logo */
+width:47px;
+height:30px;
 border-radius:6px;
 background:rgba(255,255,255,0.05);
 padding:2px;
@@ -351,7 +350,6 @@ font-size: 24px;
 
 <header class="header">
 <div class="header-content">
-<!-- LOGO MODIFICADO -->
 <div class="header-logo">
 <img src="logo-millares.png" alt="Logo Millares">
 </div>
@@ -420,6 +418,7 @@ const CONFIG = {
 // Variables temporales
 let resetActive = false;
 let resetTimeout = null;
+let lastValidTemp = 0;
 
 // Función para convertir hora UTC a Caracas (UTC-4)
 function convertToCaracasTime(thingSpeakTime) {
@@ -507,7 +506,7 @@ function updateDisplay(temp, timestamp) {
 }
 
 // Función para procesar ALARMA y RESET desde ThingSpeak
-function processAlarmReset(alarmState, resetState) {
+function processAlarmReset(alarmState, resetState, entryId) {
   const alarmBulb = document.getElementById("bulbAlarm");
   const alarmText = document.getElementById("alarmText");
   const resetBulb = document.getElementById("bulbReset");
@@ -562,27 +561,25 @@ async function checkForUpdates() {
   try {
     const data = await getThingSpeakData();
     
-    // SOLO guardar temperatura si es válida (entre -15 y 100, y no -999)
-    const temperaturaValida = data.temperature >= -15 && data.temperature <= 100;
+    // Verificar si la temperatura es válida (no 0 y dentro de rango)
+    const tempValida = data.temperature > -100 && data.temperature < 150;
     
-    if (data.timestamp && temperaturaValida) {
-      localStorage.setItem('lastThingSpeakTime', data.timestamp);
-      localStorage.setItem('lastThingSpeakTemp', data.temperature.toString());
+    if (tempValida) {
+      lastValidTemp = data.temperature;
+      if (data.timestamp) {
+        localStorage.setItem('lastThingSpeakTime', data.timestamp);
+        localStorage.setItem('lastThingSpeakTemp', data.temperature.toString());
+      }
     }
     
-    // Usar la última temperatura válida guardada, si no hay, usar 0
-    let storedTemp = parseFloat(localStorage.getItem('lastThingSpeakTemp'));
-    if (isNaN(storedTemp)) {
-      storedTemp = 0;
-    }
-    
+    // Usar la última temperatura válida
     const storedTime = localStorage.getItem('lastThingSpeakTime') || data.timestamp;
     
-    // Actualizar temperatura y hora (SIEMPRE con la última temperatura válida)
-    updateDisplay(storedTemp, storedTime);
+    // Actualizar temperatura y hora SIEMPRE con la última válida
+    updateDisplay(lastValidTemp, storedTime);
     
     // Procesar estados ACTUALES de alarma y reset
-    processAlarmReset(data.alarmState, data.resetState);
+    processAlarmReset(data.alarmState, data.resetState, data.entryId);
     
   } catch (error) {
     console.error("Error en checkForUpdates:", error);
@@ -595,7 +592,8 @@ window.addEventListener('load', function() {
   const storedTemp = localStorage.getItem('lastThingSpeakTemp');
   
   if (storedTime && storedTemp) {
-    updateDisplay(parseFloat(storedTemp), storedTime);
+    lastValidTemp = parseFloat(storedTemp);
+    updateDisplay(lastValidTemp, storedTime);
   }
   
   // Hacer primera consulta inmediata
