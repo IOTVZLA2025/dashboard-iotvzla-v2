@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -417,9 +418,10 @@ const CONFIG = {
   apiKey: "4L6L63LNFO0YG4BB"
 };
 
-// Estados PERSISTENTES
+// Estados GLOBALES
 let alarmActive = localStorage.getItem('alarmActive') === 'true';
-let resetTimer = null;
+let lastResetTime = 0;
+let lastEntryId = 0;
 
 // Función para convertir hora UTC a Caracas (UTC-4)
 function convertToCaracasTime(thingSpeakTime) {
@@ -467,29 +469,28 @@ function getTimeAgo(caracasDate) {
   return `Hace ${Math.floor(diffMins/1440)} días`;
 }
 
-// Función para obtener datos de ThingSpeak
+// Función para obtener datos COMPLETOS de ThingSpeak
 async function getThingSpeakData() {
   try {
     const url = `https://api.thingspeak.com/channels/${CONFIG.channelId}/feeds/last.json?api_key=${CONFIG.apiKey}`;
     const response = await fetch(url);
     const data = await response.json();
     
-    // Ahora obtenemos los 3 campos:
-    // field1 = temperatura, field2 = alarma, field3 = reset
     return {
       temperature: parseFloat(data.field1) || 0,
       alarmState: parseInt(data.field2) || 0,
       resetState: parseInt(data.field3) || 0,
       timestamp: data.created_at,
-      entryId: data.entry_id
+      entryId: parseInt(data.entry_id) || 0
     };
   } catch (e) {
+    console.error("Error al obtener datos:", e);
     return { 
       temperature: 0, 
       alarmState: 0, 
       resetState: 0,
       timestamp: null, 
-      entryId: null 
+      entryId: 0
     };
   }
 }
@@ -516,15 +517,22 @@ function updateDisplay(temp, timestamp) {
 }
 
 // Función para procesar ALARMA y RESET desde ThingSpeak
-function processAlarmReset(alarmState, resetState) {
+function processAlarmReset(alarmState, resetState, entryId) {
   const alarmBulb = document.getElementById("bulbAlarm");
   const alarmText = document.getElementById("alarmText");
   const resetBulb = document.getElementById("bulbReset");
   const resetText = document.getElementById("resetText");
   
+  // Solo procesar si es un nuevo registro (entryId mayor)
+  if (entryId <= lastEntryId) {
+    return; // Ya procesamos este dato
+  }
+  
+  lastEntryId = entryId;
+  
   // LÓGICA DE ALARMA (field2)
-  if (alarmState === 1 && !alarmActive) {
-    // Activar alarma solo si no estaba ya activa
+  if (alarmState === 1) {
+    // Activar alarma
     alarmActive = true;
     alarmBulb.className = "bulb-circle bulb-red";
     alarmBulb.textContent = "!";
@@ -532,70 +540,80 @@ function processAlarmReset(alarmState, resetState) {
     
     // Guardar en localStorage
     localStorage.setItem('alarmActive', 'true');
+    localStorage.setItem('lastAlarmTime', Date.now().toString());
   }
   
-  // LÓGICA DE RESET (field3)
+  // LÓGICA DE RESET (field3) - CON PRIORIDAD
   if (resetState === 1) {
-    // 1. Mostrar reset en AZUL
-    resetBulb.className = "bulb-circle bulb-blue";
-    resetBulb.textContent = "!";
-    resetText.textContent = "ACTIVO";
+    const now = Date.now();
     
-    // 2. Desactivar alarma inmediatamente
-    alarmActive = false;
-    alarmBulb.className = "bulb-circle bulb-green";
-    alarmBulb.textContent = "✓";
-    alarmText.textContent = "Normal";
-    
-    // Actualizar localStorage
-    localStorage.setItem('alarmActive', 'false');
-    
-    // 3. Apagar reset después de 5 segundos
-    if (resetTimer) clearTimeout(resetTimer);
-    resetTimer = setTimeout(() => {
-      resetBulb.className = "bulb-circle bulb-off";
-      resetBulb.textContent = "-";
-      resetText.textContent = "No activo";
-    }, 5000); // 5 segundos
-  }
-  
-  // Si no hay reset activo pero la alarma está activa, mantenerla
-  if (resetState !== 1 && alarmActive) {
-    alarmBulb.className = "bulb-circle bulb-red";
-    alarmBulb.textContent = "!";
-    alarmText.textContent = "ACTIVADA";
+    // Evitar múltiples activaciones en menos de 10 segundos
+    if (now - lastResetTime > 10000) {
+      lastResetTime = now;
+      
+      // 1. Mostrar reset en AZUL
+      resetBulb.className = "bulb-circle bulb-blue";
+      resetBulb.textContent = "!";
+      resetText.textContent = "ACTIVO";
+      
+      // 2. Desactivar alarma inmediatamente
+      alarmActive = false;
+      alarmBulb.className = "bulb-circle bulb-green";
+      alarmBulb.textContent = "✓";
+      alarmText.textContent = "Normal";
+      
+      // Actualizar localStorage
+      localStorage.setItem('alarmActive', 'false');
+      localStorage.setItem('lastResetTime', now.toString());
+      
+      // 3. Apagar reset después de 5 segundos
+      setTimeout(() => {
+        resetBulb.className = "bulb-circle bulb-off";
+        resetBulb.textContent = "-";
+        resetText.textContent = "No activo";
+      }, 5000); // 5 segundos
+    }
   }
 }
 
 // Función principal que se ejecuta periódicamente
 async function checkForUpdates() {
-  const data = await getThingSpeakData();
-  
-  // Guardar temperatura y timestamp en localStorage
-  if (data.timestamp) {
-    localStorage.setItem('lastThingSpeakTime', data.timestamp);
-    localStorage.setItem('lastThingSpeakTemp', data.temperature.toString());
+  try {
+    const data = await getThingSpeakData();
+    
+    // Guardar temperatura y timestamp en localStorage
+    if (data.timestamp) {
+      localStorage.setItem('lastThingSpeakTime', data.timestamp);
+      localStorage.setItem('lastThingSpeakTemp', data.temperature.toString());
+      localStorage.setItem('lastThingSpeakEntryId', data.entryId.toString());
+    }
+    
+    // Usar datos guardados si no hay nuevos
+    const storedTime = localStorage.getItem('lastThingSpeakTime') || data.timestamp;
+    const storedTemp = parseFloat(localStorage.getItem('lastThingSpeakTemp')) || data.temperature;
+    
+    // Actualizar temperatura y hora
+    updateDisplay(storedTemp, storedTime);
+    
+    // Procesar estados de alarma y reset desde ThingSpeak
+    processAlarmReset(data.alarmState, data.resetState, data.entryId);
+    
+  } catch (error) {
+    console.error("Error en checkForUpdates:", error);
   }
-  
-  // Usar datos guardados si no hay nuevos
-  const storedTime = localStorage.getItem('lastThingSpeakTime') || data.timestamp;
-  const storedTemp = parseFloat(localStorage.getItem('lastThingSpeakTemp')) || data.temperature;
-  
-  // Actualizar temperatura y hora
-  updateDisplay(storedTemp, storedTime);
-  
-  // Procesar estados de alarma y reset desde ThingSpeak
-  processAlarmReset(data.alarmState, data.resetState);
 }
 
 // Cargar datos guardados al iniciar
 window.addEventListener('load', function() {
-  // Cargar estado de alarma desde localStorage
+  // Cargar estados desde localStorage
   alarmActive = localStorage.getItem('alarmActive') === 'true';
+  lastEntryId = parseInt(localStorage.getItem('lastThingSpeakEntryId') || '0');
+  lastResetTime = parseInt(localStorage.getItem('lastResetTime') || '0');
   
   const storedTime = localStorage.getItem('lastThingSpeakTime');
   const storedTemp = localStorage.getItem('lastThingSpeakTemp');
   
+  // Actualizar temperatura si hay datos guardados
   if (storedTime && storedTemp) {
     updateDisplay(parseFloat(storedTemp), storedTime);
   }
@@ -613,17 +631,10 @@ window.addEventListener('load', function() {
   checkForUpdates();
 });
 
-// Configurar intervalo de consulta (60 segundos)
-const CONSULTA_INTERVAL_MS = 60000;
+// Configurar intervalo de consulta (30 segundos para mejor respuesta)
+const CONSULTA_INTERVAL_MS = 30000;
 setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
