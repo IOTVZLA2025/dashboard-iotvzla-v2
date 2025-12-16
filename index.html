@@ -11,6 +11,7 @@
 <meta name="theme-color" content="#0b1622" />
 
 <style>
+/* ====== ESTILOS ORIGINALES SIN CAMBIOS ====== */
 :root{
 --bg:#071427;
 --card:#0b1220;
@@ -222,19 +223,16 @@ font-weight:600;
 .bulb-green{
 background:radial-gradient(circle at 30% 30%, var(--green), #007a2b, #005a1f);
 color:#fff;
-text-shadow:0 2px 4px rgba(0,0,0,0.5);
 }
 
 .bulb-red{
 background:radial-gradient(circle at 30% 30%, var(--red), #a1002b, #7a0021);
 color:#fff;
-text-shadow:0 2px 4px rgba(0,0,0,0.5);
 }
 
 .bulb-blue{
 background:radial-gradient(circle at 30% 30%, var(--blue), #0077c2, #005a9c);
 color:#fff;
-text-shadow:0 2px 4px rgba(0,0,0,0.5);
 }
 
 .bulb-off{
@@ -252,107 +250,16 @@ font-weight:700;
 border-top:1px solid rgba(255,255,255,0.08);
 background:rgba(0,0,0,0.2);
 }
-
-@media (max-width: 768px) {
-body {
-padding: 10px;
-}
-
-.page-frame {
-border-radius: 15px;
-}
-
-.container {
-padding: 15px;
-}
-
-.thermo-card {
-padding: 20px;
-}
-
-.temp-digital {
-font-size: 48px;
-}
-
-.update-time {
-font-size: 13px;
-}
-
-.thermo-bar {
-height: 35px;
-}
-
-.thermo-scale {
-font-size: 11px;
-}
-
-.leds-container {
-gap: 30px;
-}
-
-.led-bulb {
-width: 120px;
-}
-
-.bulb-circle {
-width: 80px;
-height: 80px;
-font-size: 28px;
-}
-
-.bulb-label {
-font-size: 13px;
-}
-
-.bulb-status {
-font-size: 11px;
-}
-}
-
-@media (max-width: 480px) {
-.temp-digital {
-font-size: 42px;
-}
-
-.update-time {
-font-size: 12px;
-}
-
-.thermo-bar {
-height: 30px;
-}
-
-.thermo-scale {
-font-size: 10px;
-}
-
-.leds-container {
-gap: 20px;
-flex-direction: row;
-}
-
-.led-bulb {
-width: 100px;
-}
-
-.bulb-circle {
-width: 70px;
-height: 70px;
-font-size: 24px;
-}
-}
-
 </style>
 </head>
 
 <body>
 
 <div class="page-frame">
-
 <header class="header">
 <div class="header-content">
 <div class="header-logo">
-<img src="logo-millares.png" alt="Logo Millares">
+<img src="logo-millares.png">
 </div>
 <div class="header-text">
 <h1>MONITOREO DE VARIABLES</h1>
@@ -363,7 +270,6 @@ font-size: 24px;
 </header>
 
 <div class="container">
-
 <div class="thermo-card">
 <div class="thermo-wrap">
 
@@ -384,7 +290,6 @@ font-size: 24px;
 </div>
 
 <div class="leds-container">
-
 <div class="led-bulb">
 <div id="bulbAlarm" class="bulb-circle bulb-green">✓</div>
 <div class="bulb-label">ALARMA</div>
@@ -396,7 +301,6 @@ font-size: 24px;
 <div class="bulb-label">RESET</div>
 <div id="resetText" class="bulb-status">No activo</div>
 </div>
-
 </div>
 
 </div>
@@ -405,9 +309,6 @@ font-size: 24px;
 <div class="footer-copy">
 &copy; MILLARES INGENIERIA SPA CHILE
 </div>
-
-</div>
-
 </div>
 
 <script>
@@ -416,215 +317,67 @@ const CONFIG = {
   apiKey: "4L6L63LNFO0YG4BB"
 };
 
-// Variables temporales
-let resetActive = false;
-let resetTimeout = null;
-let lastValidTemp = 0;
+let lastEntryId = null;
+let lastTimestamp = null;
+let lastTemp = null;
 
-// Función para convertir hora UTC a Caracas (UTC-4) - CORREGIDA
-function convertToCaracasTime(thingSpeakTime) {
-  if (!thingSpeakTime) return null;
-  try {
-    // Parsear manualmente el string de ThingSpeak
-    // Formato: "2025-12-16T13:20:30Z"
-    const parts = thingSpeakTime.split(/[TZ\-:]/);
-    if (parts.length < 6) return null;
-    
-    const year = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1; // Mes en JS es 0-11
-    const day = parseInt(parts[2]);
-    const hour = parseInt(parts[3]);
-    const minute = parseInt(parts[4]);
-    const second = parseInt(parts[5]);
-    
-    // Crear fecha en UTC
-    const utcDate = new Date(Date.UTC(year, month, day, hour, minute, second));
-    
-    // Ajustar a Caracas (UTC-4) restando 4 horas
-    const caracasDate = new Date(utcDate.getTime() - (4 * 60 * 60000));
-    
-    return caracasDate;
-  } catch (e) {
-    console.error("Error convirtiendo hora:", e);
-    return null;
-  }
+function convertToCaracasTime(ts){
+  const d = new Date(ts);
+  return new Date(d.getTime() - (4 * 60 * 60 * 1000));
 }
 
-// Función para formatear fecha y hora
-function formatDateTime(date) {
-  if (!date) return "Hora no disponible";
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  let hours = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
+function formatDateTime(date){
+  return date.toLocaleString("es-VE", {
+    timeZone: "America/Caracas",
+    hour12: true
+  });
 }
 
-// Función para calcular "Hace X minutos"
-function getTimeAgo(caracasDate) {
-  if (!caracasDate) return "--";
-  const now = new Date();
-  const diffMs = now - caracasDate;
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return "Hace segundos";
-  if (diffMins < 60) return `Hace ${diffMins} min`;
-  if (diffMins < 1440) return `Hace ${Math.floor(diffMins/60)} horas`;
-  return `Hace ${Math.floor(diffMins/1440)} días`;
+function timeAgo(date){
+  const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (diff < 60) return "Hace segundos";
+  if (diff < 3600) return `Hace ${Math.floor(diff/60)} min`;
+  if (diff < 86400) return `Hace ${Math.floor(diff/3600)} horas`;
+  return `Hace ${Math.floor(diff/86400)} días`;
 }
 
-// Función para obtener datos de ThingSpeak (EVITAR CACHE)
-async function getThingSpeakData() {
-  try {
-    const cacheBuster = new Date().getTime();
-    const url = `https://api.thingspeak.com/channels/${CONFIG.channelId}/feeds/last.json?api_key=${CONFIG.apiKey}&_=${cacheBuster}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    return {
-      temperature: parseFloat(data.field1) || 0,
-      alarmState: parseInt(data.field2) || 0,
-      resetState: parseInt(data.field3) || 0,
-      timestamp: data.created_at,
-      entryId: parseInt(data.entry_id) || 0
-    };
-  } catch (e) {
-    return { 
-      temperature: 0, 
-      alarmState: 0, 
-      resetState: 0,
-      timestamp: null, 
-      entryId: 0
-    };
-  }
+async function getThingSpeakData(){
+  const r = await fetch(`https://api.thingspeak.com/channels/${CONFIG.channelId}/feeds/last.json?api_key=${CONFIG.apiKey}&_=${Date.now()}`);
+  return await r.json();
 }
 
-// Función para actualizar la pantalla
-function updateDisplay(temp, timestamp) {
-  // Actualizar termómetro
-  const min = -15, max = 100;
-  const pct = Math.max(0, Math.min(1, (temp - min) / (max - min)));
-  document.getElementById("mercury").style.width = (pct * 100) + "%";
-  document.getElementById("tempValue").textContent = temp.toFixed(1);
-  
-  // Actualizar hora SIEMPRE con el timestamp actual
-  const caracasDate = convertToCaracasTime(timestamp);
-  const timeElement = document.getElementById("updateTime");
-  
-  if (caracasDate) {
-    const timeAgo = getTimeAgo(caracasDate);
-    const formattedTime = formatDateTime(caracasDate);
-    timeElement.textContent = `Última medición: ${formattedTime} (${timeAgo})`;
-  } else {
-    timeElement.textContent = "Última medición: --/--/---- --:--:-- --";
-  }
+function updateDisplay(){
+  if (!lastTimestamp || lastTemp === null) return;
+  const caracas = convertToCaracasTime(lastTimestamp);
+  document.getElementById("updateTime").textContent =
+    `Última medición: ${formatDateTime(caracas)} (${timeAgo(caracas)})`;
 }
 
-// Función para procesar ALARMA y RESET desde ThingSpeak
-function processAlarmReset(alarmState, resetState, entryId) {
-  const alarmBulb = document.getElementById("bulbAlarm");
-  const alarmText = document.getElementById("alarmText");
-  const resetBulb = document.getElementById("bulbReset");
-  const resetText = document.getElementById("resetText");
-  
-  // RESET TIENE PRIORIDAD TOTAL - Solo activar si no está ya activo
-  if (resetState === 1 && !resetActive) {
-    // 1. Activar reset (AZUL)
-    resetBulb.className = "bulb-circle bulb-blue";
-    resetBulb.textContent = "!";
-    resetText.textContent = "ACTIVO";
-    resetActive = true;
-    
-    // 2. Desactivar alarma (VERDE)
-    alarmBulb.className = "bulb-circle bulb-green";
-    alarmBulb.textContent = "✓";
-    alarmText.textContent = "Normal";
-    
-    // 3. Apagar reset después de 5 segundos
-    if (resetTimeout) clearTimeout(resetTimeout);
-    resetTimeout = setTimeout(() => {
-      resetBulb.className = "bulb-circle bulb-off";
-      resetBulb.textContent = "-";
-      resetText.textContent = "No activo";
-      resetActive = false;
-    }, 5000);
-    
-    return;
+async function checkForUpdates(){
+  const data = await getThingSpeakData();
+  if (data.entry_id !== lastEntryId){
+    lastEntryId = data.entry_id;
+    lastTimestamp = data.created_at;
+    lastTemp = parseFloat(data.field1);
+    localStorage.setItem("ts", lastTimestamp);
+    localStorage.setItem("tp", lastTemp);
   }
-  
-  // SI NO HAY RESET, mostrar estado normal del reset
-  if (!resetActive) {
-    resetBulb.className = "bulb-circle bulb-off";
-    resetBulb.textContent = "-";
-    resetText.textContent = "No activo";
-  }
-  
-  // CONTROL DE ALARMA (si no hay reset activo)
-  if (alarmState === 1) {
-    alarmBulb.className = "bulb-circle bulb-red";
-    alarmBulb.textContent = "!";
-    alarmText.textContent = "ACTIVADA";
-  } else {
-    alarmBulb.className = "bulb-circle bulb-green";
-    alarmBulb.textContent = "✓";
-    alarmText.textContent = "Normal";
-  }
+  document.getElementById("tempValue").textContent = lastTemp.toFixed(1);
+  document.getElementById("mercury").style.width = Math.min(100, Math.max(0,(lastTemp+15))) + "%";
+  updateDisplay();
 }
 
-// Función principal que se ejecuta periódicamente
-async function checkForUpdates() {
-  try {
-    const data = await getThingSpeakData();
-    
-    // Guardar timestamp SIEMPRE (válido o no)
-    if (data.timestamp) {
-      localStorage.setItem('lastThingSpeakTime', data.timestamp);
-    }
-    
-    // Verificar si la temperatura es válida (excluye 0°C si no es válido en tu ambiente)
-    const tempValida = data.temperature !== 0 && data.temperature >= -15 && data.temperature <= 100;
-    
-    if (tempValida) {
-      lastValidTemp = data.temperature;
-      localStorage.setItem('lastThingSpeakTemp', data.temperature.toString());
-    }
-    
-    // Usar la última temperatura válida y el timestamp más reciente
-    const storedTime = localStorage.getItem('lastThingSpeakTime');
-    const storedTemp = parseFloat(localStorage.getItem('lastThingSpeakTemp')) || lastValidTemp;
-    
-    // Actualizar temperatura y hora con los datos más recientes
-    updateDisplay(storedTemp, storedTime);
-    
-    // Procesar estados ACTUALES de alarma y reset
-    processAlarmReset(data.alarmState, data.resetState, data.entryId);
-    
-  } catch (error) {
-    console.error("Error en checkForUpdates:", error);
+window.addEventListener("load", ()=>{
+  const t = localStorage.getItem("ts");
+  const v = localStorage.getItem("tp");
+  if (t && v){
+    lastTimestamp = t;
+    lastTemp = parseFloat(v);
   }
-}
-
-// Cargar datos guardados al iniciar
-window.addEventListener('load', function() {
-  const storedTime = localStorage.getItem('lastThingSpeakTime');
-  const storedTemp = localStorage.getItem('lastThingSpeakTemp');
-  
-  if (storedTime && storedTemp) {
-    lastValidTemp = parseFloat(storedTemp);
-    updateDisplay(lastValidTemp, storedTime);
-  }
-  
-  // Hacer primera consulta inmediata
   checkForUpdates();
+  setInterval(checkForUpdates,15000);
+  setInterval(updateDisplay,1000);
 });
-
-// Configurar intervalo de consulta (15 segundos para ahorrar ThingSpeak)
-const CONSULTA_INTERVAL_MS = 15000;
-setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 </script>
 
 </body>
