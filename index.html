@@ -495,7 +495,7 @@ function updateDisplay(temp, timestamp) {
   const min = -15, max = 100;
   const pct = Math.max(0, Math.min(1, (temp - min) / (max - min)));
   document.getElementById("mercury").style.width = (pct * 100) + "%";
-  document.getElementById("tempValue").textContent = temp.toFixed(1);
+  document.getElementById("tempValue").textContent = temp.toFixed(2);
   
   // Actualizar hora SIEMPRE con el timestamp actual
   const caracasDate = convertToCaracasTime(timestamp);
@@ -615,4 +615,5 @@ setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 
 </body>
 </html>
+
 
