@@ -686,11 +686,12 @@ window.addEventListener('load', function() {
   checkForUpdates();
 });
 
-// Configurar intervalo de consulta (15 segundos para ahorrar ThingSpeak)
+// Configurar intervalo de consulta (45 - 90 segundos para ahorrar ThingSpeak)
 const CONSULTA_INTERVAL_MS = 45000;
 setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 </script>
 
 </body>
 </html>
+
 
