@@ -340,7 +340,6 @@ height: 70px;
 font-size: 24px;
 }
 }
-
 </style>
 </head>
 
@@ -418,6 +417,7 @@ const CONFIG = {
 // Variables temporales
 let resetActive = false;
 let resetTimeout = null;
+let resetBlinkInterval = null;
 let lastValidTemp = 0;
 
 // Función para convertir hora UTC a Caracas (UTC-4) - REPARADA
@@ -519,25 +519,43 @@ function processAlarmReset(alarmState, resetState, entryId) {
   
   // RESET TIENE PRIORIDAD TOTAL - Solo activar si no está ya activo
   if (resetState === 1 && !resetActive) {
-    // 1. Activar reset (AZUL)
-    resetBulb.className = "bulb-circle bulb-blue";
-    resetBulb.textContent = "!";
-    resetText.textContent = "ACTIVO";
     resetActive = true;
     
-    // 2. Desactivar alarma (VERDE)
+    // 1. Desactivar alarma (VERDE)
     alarmBulb.className = "bulb-circle bulb-green";
     alarmBulb.textContent = "✓";
     alarmText.textContent = "Normal";
     
-    // 3. Apagar reset después de 5 segundos
+    // 2. Configurar parpadeo del reset
+    resetText.textContent = "ACTIVO";
+    let blinkState = true;
+    
+    // Función de parpadeo
+    function blinkResetBulb() {
+        if (blinkState) {
+            resetBulb.className = "bulb-circle bulb-blue";
+            resetBulb.textContent = "!";
+        } else {
+            resetBulb.className = "bulb-circle bulb-off";
+            resetBulb.textContent = "-";
+        }
+        blinkState = !blinkState;
+    }
+    
+    // Iniciar parpadeo - AJUSTA ESTE VALOR (velocidad)
+    // 500ms = medio segundo entre cambios (250ms encendido, 250ms apagado)
+    const blinkInterval = setInterval(blinkResetBulb, 500);
+    
+    // Detener parpadeo después de X tiempo - AJUSTA ESTE VALOR (duración total)
+    // 3000ms = 3 segundos total (6 cambios)
     if (resetTimeout) clearTimeout(resetTimeout);
     resetTimeout = setTimeout(() => {
-      resetBulb.className = "bulb-circle bulb-off";
-      resetBulb.textContent = "-";
-      resetText.textContent = "No activo";
-      resetActive = false;
-    }, 5000);
+        clearInterval(blinkInterval);
+        resetBulb.className = "bulb-circle bulb-off";
+        resetBulb.textContent = "-";
+        resetText.textContent = "No activo";
+        resetActive = false;
+    }, 3000);
     
     return;
   }
@@ -615,5 +633,3 @@ setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 
 </body>
 </html>
-
-
