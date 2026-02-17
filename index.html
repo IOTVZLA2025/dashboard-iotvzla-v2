@@ -374,10 +374,21 @@ function getTimeAgo(caracasDate) {
   const now = new Date();
   const diffMs = now - caracasDate;
   const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return "Hace segundos";
-  if (diffMins < 60) return `Hace ${diffMins} min`;
-  if (diffMins < 1440) return `Hace ${Math.floor(diffMins/60)} horas`;
-  return `Hace ${Math.floor(diffMins/1440)} días`;
+  
+  let timeText = "";
+  if (diffMins < 1) timeText = "Hace segundos";
+  else if (diffMins < 60) timeText = `Hace ${diffMins} min`;
+  else if (diffMins < 1440) timeText = `Hace ${Math.floor(diffMins/60)} horas`;
+  else if (diffMins < 10080) timeText = `Hace ${Math.floor(diffMins/1440)} días`;
+  else if (diffMins < 43200) timeText = `Hace ${Math.floor(diffMins/10080)} semanas`;
+  else if (diffMins < 525600) timeText = `Hace ${Math.floor(diffMins/43200)} meses`;
+  else timeText = `Hace ${Math.floor(diffMins/525600)} años`;
+  
+  if (diffMins > 7) {
+    timeText += " - no han llegado datos nuevos";
+  }
+  
+  return timeText;
 }
 
 // Obtener datos de ThingSpeak
@@ -515,4 +526,5 @@ setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 
 </body>
 </html>
+
 
