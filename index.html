@@ -354,11 +354,17 @@ const CONFIG = {
   apiKey: "4L6L63LNFO0YG4BB"
 };
 
+// LIMPIAR CACHÉ VIEJO
+if (!localStorage.getItem('cacheVersion') || localStorage.getItem('cacheVersion') !== '2.0') {
+  localStorage.clear();
+  localStorage.setItem('cacheVersion', '2.0');
+}
+
 let lastValidTempProc = 0;
 let lastValidHumProc = 0;
 let lastValidTempAmb = 0;
 let lastValidHumAmb = 0;
-
+  
 // Convertir hora UTC a Caracas
 function convertToCaracasTime(thingSpeakTime) {
   if (!thingSpeakTime) return null;
@@ -544,6 +550,7 @@ setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 
 </body>
 </html>
+
 
 
 
