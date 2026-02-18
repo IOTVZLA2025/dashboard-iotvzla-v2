@@ -476,22 +476,22 @@ async function checkForUpdates() {
     }
     
     // Validar y actualizar datos
-    if (data.tempProc >= -15 && data.tempProc <= 100) {
+    if (data.tempProc === -999 || (data.tempProc >= -15 && data.tempProc <= 100)) {
       lastValidTempProc = data.tempProc;
       localStorage.setItem('lastTempProc', data.tempProc.toString());
     }
     
-    if (data.humProc >= 0 && data.humProc <= 100) {
+    if (data.humProc === -999 || (data.humProc >= 0 && data.humProc <= 100)) {
       lastValidHumProc = data.humProc;
       localStorage.setItem('lastHumProc', data.humProc.toString());
     }
     
-    if (data.tempAmb >= -15 && data.tempAmb <= 100) {
+    if (data.tempAmb === -999 || (data.tempAmb >= -15 && data.tempAmb <= 100)) {
       lastValidTempAmb = data.tempAmb;
       localStorage.setItem('lastTempAmb', data.tempAmb.toString());
     }
     
-    if (data.humAmb >= 0 && data.humAmb <= 100) {
+    if (data.humAmb === -999 || (data.humAmb >= 0 && data.humAmb <= 100)) {
       lastValidHumAmb = data.humAmb;
       localStorage.setItem('lastHumAmb', data.humAmb.toString());
     }
@@ -511,7 +511,7 @@ async function checkForUpdates() {
     console.error("Error en checkForUpdates:", error);
   }
 }
-
+  
 // Cargar datos guardados al iniciar
 window.addEventListener('load', function() {
   const storedTime = localStorage.getItem('lastThingSpeakTime');
@@ -550,6 +550,7 @@ setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 
 </body>
 </html>
+
 
 
 
