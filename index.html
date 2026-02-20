@@ -354,10 +354,9 @@ const CONFIG = {
   apiKey: "4L6L63LNFO0YG4BB"
 };
 
-// LIMPIAR CACHÉ VIEJO
-if (!localStorage.getItem('cacheVersion') || localStorage.getItem('cacheVersion') !== '4.0') {
+if (!localStorage.getItem('cacheVersion') || localStorage.getItem('cacheVersion') !== '6.0') {
   localStorage.clear();
-  localStorage.setItem('cacheVersion', '2.0');
+  localStorage.setItem('cacheVersion', '6.0');
 }
 
 let lastValidTempProc = -999;
@@ -365,7 +364,6 @@ let lastValidHumProc = -999;
 let lastValidTempAmb = -999;
 let lastValidHumAmb = -999;
   
-// Convertir hora UTC a Caracas
 function convertToCaracasTime(thingSpeakTime) {
   if (!thingSpeakTime) return null;
   try {
@@ -377,7 +375,6 @@ function convertToCaracasTime(thingSpeakTime) {
   }
 }
 
-// Formatear fecha y hora
 function formatDateTime(date) {
   if (!date) return "Hora no disponible";
   const day = String(date.getDate()).padStart(2, '0');
@@ -392,7 +389,6 @@ function formatDateTime(date) {
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
-// Calcular "Hace X minutos"
 function getTimeAgo(caracasDate) {
   if (!caracasDate) return "--";
   const now = new Date();
@@ -415,7 +411,6 @@ function getTimeAgo(caracasDate) {
   return timeText;
 }
 
-// Obtener datos de ThingSpeak
 async function getThingSpeakData() {
   try {
     const cacheBuster = new Date().getTime();
@@ -443,19 +438,20 @@ async function getThingSpeakData() {
   }
 }
 
-// Actualizar widget temperatura
 function updateTempWidget(value, elementId, scaleId, timeId, min, max) {
   const element = document.getElementById(elementId);
   
   if (value === -999 || value <= -100) {
     document.getElementById(scaleId).style.width = "0%";
-    element.textContent = "ERROR";
+    element.textContent = "FALLA EN SENSOR";
     element.parentElement.style.color = "var(--red)";
+    element.style.fontSize = "40px";
   } else {
     const pct = Math.max(0, Math.min(1, (value - min) / (max - min)));
     document.getElementById(scaleId).style.width = (pct * 100) + "%";
     element.textContent = value.toFixed(1).replace('.', ',');
     element.parentElement.style.color = "var(--yellow)";
+    element.style.fontSize = "58px";
   }
   
   if (timeId) {
@@ -468,23 +464,28 @@ function updateTempWidget(value, elementId, scaleId, timeId, min, max) {
   }
 }
 
-// Actualizar widget humedad
 function updateHumWidget(value, elementId, scaleId) {
   const element = document.getElementById(elementId);
   
-  if (value === -999 || value < -100) {
+  if (value === -999 || value <= -100) {
     document.getElementById(scaleId).style.width = "0%";
-    element.textContent = "ERROR";
+    element.textContent = "FALLA EN SENSOR";
     element.parentElement.style.color = "var(--red)";
+    element.style.fontSize = "40px";
+  } else if (value === -888) {
+    document.getElementById(scaleId).style.width = "0%";
+    element.textContent = "FUERA DE RANGO";
+    element.parentElement.style.color = "var(--orange)";
+    element.style.fontSize = "40px";
   } else {
     const pct = Math.max(0, Math.min(1, value / 100));
     document.getElementById(scaleId).style.width = (pct * 100) + "%";
     element.textContent = Math.round(value);
     element.parentElement.style.color = "var(--cyan)";
+    element.style.fontSize = "58px";
   }
 }
 
-// Función principal
 async function checkForUpdates() {
   try {
     const data = await getThingSpeakData();
@@ -493,13 +494,12 @@ async function checkForUpdates() {
       localStorage.setItem('lastThingSpeakTime', data.timestamp);
     }
     
-    // Validar y actualizar datos
     if (data.tempProc === -999 || (data.tempProc >= -15 && data.tempProc <= 100)) {
       lastValidTempProc = data.tempProc;
       localStorage.setItem('lastTempProc', data.tempProc.toString());
     }
     
-    if (data.humProc === -999 || (data.humProc >= 0 && data.humProc <= 100)) {
+    if (data.humProc === -999 || data.humProc === -888 || (data.humProc >= 0 && data.humProc <= 100)) {
       lastValidHumProc = data.humProc;
       localStorage.setItem('lastHumProc', data.humProc.toString());
     }
@@ -514,7 +514,6 @@ async function checkForUpdates() {
       localStorage.setItem('lastHumAmb', data.humAmb.toString());
     }
     
-    const storedTime = localStorage.getItem('lastThingSpeakTime');
     const storedTempProc = parseFloat(localStorage.getItem('lastTempProc')) || lastValidTempProc;
     const storedHumProc = parseFloat(localStorage.getItem('lastHumProc')) || lastValidHumProc;
     const storedTempAmb = parseFloat(localStorage.getItem('lastTempAmb')) || lastValidTempAmb;
@@ -530,9 +529,7 @@ async function checkForUpdates() {
   }
 }
   
-// Cargar datos guardados al iniciar
 window.addEventListener('load', function() {
-  const storedTime = localStorage.getItem('lastThingSpeakTime');
   const storedTempProc = localStorage.getItem('lastTempProc');
   const storedHumProc = localStorage.getItem('lastHumProc');
   const storedTempAmb = localStorage.getItem('lastTempAmb');
@@ -561,21 +558,9 @@ window.addEventListener('load', function() {
   checkForUpdates();
 });
 
-// Consultar cada 15 segundos
 const CONSULTA_INTERVAL_MS = 15000;
 setInterval(checkForUpdates, CONSULTA_INTERVAL_MS);
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
