@@ -445,7 +445,7 @@ function updateTempWidget(value, elementId, scaleId, timeId, min, max) {
     document.getElementById(scaleId).style.width = "0%";
     element.textContent = "FALLA EN SENSOR";
     element.parentElement.style.color = "var(--red)";
-    element.style.fontSize = "40px";
+    element.style.fontSize = "28px";  // 30% más pequeño (40px → 28px)
   } else {
     const pct = Math.max(0, Math.min(1, (value - min) / (max - min)));
     document.getElementById(scaleId).style.width = (pct * 100) + "%";
@@ -471,7 +471,7 @@ function updateHumWidget(value, elementId, scaleId) {
     document.getElementById(scaleId).style.width = "0%";
     element.textContent = "FALLA EN SENSOR";
     element.parentElement.style.color = "var(--red)";
-    element.style.fontSize = "40px";
+    element.style.fontSize = "28px";  // 30% más pequeño (40px → 28px)
   } else if (value === -888) {
     document.getElementById(scaleId).style.width = "0%";
     element.textContent = "FUERA DE RANGO";
